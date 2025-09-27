@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import verifyJWT from "./src/middleware/auth.js";
 import userRouter from "./src/routes/userRouter.js";
+import courseRouter from "./src/routes/courseRouter.js";
 
 const port = 3000;
 const app = express();
@@ -24,6 +25,7 @@ mongoose
   });
 
 app.use("/api/user", userRouter);
+app.use("/api/course", courseRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

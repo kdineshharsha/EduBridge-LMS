@@ -2,7 +2,21 @@ import User from "../models/user.js";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import axios from "axios";
+import nodemailer from "nodemailer";
+import OTP from "../models/otp.js";
 dotenv.config();
+
+const transport = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 export function saveUser(req, res) {
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
@@ -19,6 +33,7 @@ export function saveUser(req, res) {
   user
     .save()
     .then(() => {
+      console.log(user);
       return res.status(200).json({
         message: "User saved successfully",
       });
@@ -79,6 +94,7 @@ export async function googleLogin(req, res) {
         firstName: response.data.given_name,
         lastName: response.data.family_name,
         isEmailVerified: true,
+        role: response.data.role,
         password: accessToken, // temporary, since Google handles auth
       });
 
@@ -105,6 +121,7 @@ export async function googleLogin(req, res) {
       });
     }
   } catch (e) {
+    console.log(e);
     res.status(500).json({
       message: "Google login failed",
     });
@@ -215,4 +232,87 @@ export async function deleteUser(req, res) {
   } catch (err) {
     res.status(500).json({ message: "Error deleting user" });
   }
+}
+
+export async function changePassword(req, res) {
+  const { email, otp, password } = req.body;
+
+  const message = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "🔒 Your Password Has Been Changed",
+    text: "Your password was successfully updated. If this wasn’t you, please contact support immediately.",
+  };
+
+  try {
+    const lastOTPData = await OTP.findOne({ email }).sort({ createdAt: -1 });
+
+    if (!lastOTPData) {
+      return res.status(404).json({ message: "No OTP found for this email" });
+    }
+
+    if (lastOTPData.otp !== otp) {
+      return res.status(403).json({ message: "Invalid OTP" });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    await User.updateOne({ email }, { password: hashedPassword });
+
+    await OTP.deleteMany({ email });
+
+    transport.sendMail(message, (error, info) => {
+      if (error) {
+        console.error("Email error:", error);
+        return res
+          .status(500)
+          .json({ message: "Password changed, but failed to send email" });
+      } else {
+        console.log("Email sent:");
+        return res.json({
+          message: "Password changed successfully, email sent",
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error changing password" });
+  }
+}
+
+export async function sendOTP(req, res) {
+  const email = req.body.email;
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  const message = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "OTP Verification",
+    text: `Your OTP is ${otp}`,
+  };
+
+  const newOTP = new OTP({ email: email, otp: otp });
+
+  newOTP
+    .save()
+    .then(() => {
+      console.log("OTP saved successfully");
+    })
+    .catch(() => {
+      console.log("Error saving OTP");
+    });
+
+  transport.sendMail(message, (error, info) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Error sending OTP",
+      });
+    } else {
+      console.log("Email sent successfully");
+      return res.status(200).json({
+        message: "OTP sent successfully",
+      });
+    }
+  });
 }

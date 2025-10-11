@@ -316,3 +316,26 @@ export async function sendOTP(req, res) {
     }
   });
 }
+
+export async function getCurrentUser(req, res) {
+  if (!req.user) {
+    return res.status(403).json({
+      message: "Please login to access this resource",
+    });
+  }
+
+  try {
+    const freshUser = await User.findOne({ email: req.user.email }).select(
+      "-password"
+    );
+
+    if (!freshUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({ user: freshUser });
+  } catch (err) {
+    console.error("Error fetching current user:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+}

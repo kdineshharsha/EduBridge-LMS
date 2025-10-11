@@ -3,6 +3,7 @@ import {
   changePassword,
   deleteUser,
   getAllUsers,
+  getCurrentUser,
   getUserById,
   googleLogin,
   loginUser,
@@ -13,6 +14,7 @@ import {
 const userRouter = express.Router();
 
 userRouter.get("/", getAllUsers);
+userRouter.get("/current", getCurrentUser);
 userRouter.post("/register", saveUser);
 userRouter.post("/google", googleLogin);
 userRouter.post("/login", loginUser);

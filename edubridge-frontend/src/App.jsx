@@ -6,8 +6,8 @@ import Register from "./pages/client/register";
 import SelectRole from "./pages/client/selectRole";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import InstrctorDashboard from "./pages/client/instructorDashboard";
-import AdminPage from "./pages/admin/adminPage";
 import ForgotPass from "./pages/client/forgotPass";
+import AdminPage from "./pages/adminPage";
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/instructor" element={<InstrctorDashboard />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/forgot-password" element={<ForgotPass />} />
         </Routes>
       </BrowserRouter>

@@ -2,8 +2,11 @@
 @plugin "@iconify/tailwind4";
 @theme {
   --color-primary: #ff0000;
-  --color-secondary: #00ff00;
+  --color-background: #ffffff;
   --color-tertiary: #0000ff;
+
+  --color-bg: linear-gradient(to right, #6a11cb, #2575fc);
+  --gradient-sunset: linear-gradient(135deg, #ff7e5f, #feb47b);
 }
 
 .poppins-thin {

@@ -47,7 +47,7 @@ export default function ForgotPass() {
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-black to-purple-800 p-4">
-      <div className="relative flex w-full lg:w-1/2 h-full bg-gray-900/40 p-10 flex-col justify-center backdrop-blur-2xl rounded-r-xl max-w-2xl overflow-hidden">
+      <div className="relative flex w-full lg:w-1/2 h-full bg-gray-900/40 p-10 flex-col justify-center backdrop-blur-2xl rounded-xl max-w-2xl overflow-hidden">
         <div className="flex items-center justify-center mb-6">
           <img src="/logo.png" className="size-40" alt="Logo" />
         </div>
@@ -122,6 +122,17 @@ export default function ForgotPass() {
             >
               Reset Password
             </button>
+
+            <p className="text-gray-400 mt-6 text-center">
+              Is this the correct email?
+              <span
+                onClick={() => setEmailSent(false)}
+                href="#"
+                className="text-purple-400 cursor-pointer"
+              >
+                Re-enter the email
+              </span>
+            </p>
           </div>
         </div>
       </div>

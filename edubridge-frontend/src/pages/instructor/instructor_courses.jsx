@@ -3,6 +3,7 @@ import { Plus, Eye, Pencil, Trash2, BookOpen } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { SlBadge } from "react-icons/sl";
+import toast from "react-hot-toast";
 
 export default function InstructorCourses() {
   const [courses, setCourses] = useState([]);
@@ -51,7 +52,26 @@ export default function InstructorCourses() {
     if (userId) {
       fetchCourses();
     }
-  }, [userId]);
+  }, [userId, isLoaded]);
+
+  const handleDelete = async (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this lesson?")) return;
+
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/course/${courseId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setIsLoaded(false);
+      console.log("Course deleted successfully!");
+      toast.success("Course deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      toast.error("Failed to delete course!");
+    }
+  };
 
   return (
     <div className="h-full w-full overflow-y-auto bg-white rounded-lg md:p-6 py-6 px-2 scrollbar-hide">
@@ -226,7 +246,7 @@ export default function InstructorCourses() {
                     <span className="hidden sm:inline">Edit</span>
                   </Link>
                   <button
-                    onClick={() => console.log("Delete", course._id)}
+                    onClick={() => handleDelete(course._id)}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium text-sm border border-red-200"
                     title="Delete"
                   >

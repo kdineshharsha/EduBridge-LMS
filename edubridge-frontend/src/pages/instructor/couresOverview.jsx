@@ -33,21 +33,6 @@ export default function CourseOverview() {
 
     fetchCourses();
   }, [params.id]);
-  const items = [
-    {
-      title: "What is React?",
-      content: "React is a JavaScript library for building user interfaces.",
-    },
-    {
-      title: "Why use Tailwind?",
-      content:
-        "Tailwind is a utility-first CSS framework for rapid UI development.",
-    },
-    {
-      title: "How to create components?",
-      content: "Components are reusable building blocks in React.",
-    },
-  ];
 
   return (
     <div className="h-full overflow-y-scroll w-full bg-white rounded-xl lg font-semibold md:p-6 py-6 px-2">
@@ -67,13 +52,16 @@ export default function CourseOverview() {
               </p>
             </div>
           </div>
-          <Link
+
+          {/* Flag */}
+
+          {/* <Link
             to="add-course/"
             className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-3 rounded-xl text-white hover:shadow-lg hover:shadow-blue-400/40 transition-all duration-200 font-semibold text-sm shadow-md hover:scale-105 whitespace-nowrap"
           >
             <Plus className="w-5 h-5" />
             Add New Course
-          </Link>
+          </Link> */}
         </div>
       </div>
 

@@ -6,15 +6,21 @@ import HomePage from "./client/homePage";
 import Courses from "./client/courses";
 import AddCourse from "./instructor/addCourse";
 import InstructorPage from "./instructorPage";
+import Overview from "./client/Overview";
+import Profile from "./client/profile";
+import MyCourses from "./client/myCourses";
 export default function FrontPage() {
   return (
-    <div className=" w-full bg-background poppins-regular ">
+    <div className=" w-full bg-background poppins-regular  ">
       <TopNavbar />
-      <div className="w-full h-screen bg-blue-400 ">
+      <div className="w-full  bg-gray-200 min-h-screen ">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/my-courses" element={<MyCourses />} />
           <Route path="/contacts" element={<Contacts />} />
-          <Route path="/courses/*" element={<Courses />} />
+          <Route path="/courses/" element={<Courses />} />
+          <Route path="/courses/overview/:id" element={<Overview />} />
         </Routes>
       </div>
     </div>

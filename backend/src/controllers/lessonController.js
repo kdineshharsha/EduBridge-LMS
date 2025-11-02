@@ -5,19 +5,33 @@ export async function createLesson(req, res) {
   if (!req.user) {
     return res.status(403).json({
       message:
-        "You are not authorized to perform this action, please login as a admin or instructor",
+        "You are not authorized to perform this action, please login as an admin or instructor",
     });
   }
+
   try {
-    const lesson = new Lesson(req.body);
-    await lesson.save();
-    await Course.findByIdAndUpdate(req.body.course, {
-      $push: { lessons: lesson._id },
+    let lessonsData = req.body.lessons || [req.body];
+    console.log(lessonsData);
+    // 👆 if `lessons` array exists, use it; otherwise wrap single lesson in array
+
+    // Insert many lessons at once
+    const createdLessons = await Lesson.insertMany(lessonsData);
+
+    // Collect all lesson IDs
+    const lessonIds = createdLessons.map((lesson) => lesson._id);
+
+    // Update the course with all new lessons
+    await Course.findByIdAndUpdate(req.body.course || lessonsData[0].course, {
+      $push: { lessons: { $each: lessonIds } },
     });
-    res.status(201).json({ message: "Lesson created successfully", lesson });
+
+    res.status(201).json({
+      message: `${createdLessons.length} lesson(s) created successfully`,
+      lessons: createdLessons,
+    });
   } catch (error) {
     console.error("Lesson creation error:", error);
-    res.status(500).json({ message: "Error creating lesson" });
+    res.status(500).json({ message: "Error creating lesson(s)" });
   }
 }
 
@@ -27,6 +41,13 @@ export async function getAllLessons(req, res) {
 
     // Optional filtering by course ID
     const query = course ? { course } : {};
+
+    if (!req.user) {
+      return res.status(403).json({
+        message:
+          "You are not authorized to perform this action, please login as an admin or instructor",
+      });
+    }
 
     const lessons = await Lesson.find(query)
       .sort({ order: 1 }) // Sort by lesson sequence

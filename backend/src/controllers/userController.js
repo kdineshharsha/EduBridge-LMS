@@ -69,6 +69,7 @@ export async function googleLogin(req, res) {
       }
 
       const userData = {
+        _id: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -101,6 +102,7 @@ export async function googleLogin(req, res) {
       await newUser.save();
 
       const userData = {
+        _id: user._id,
         email: response.data.email,
         firstName: response.data.given_name,
         lastName: response.data.family_name,

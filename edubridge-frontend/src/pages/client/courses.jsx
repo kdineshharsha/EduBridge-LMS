@@ -16,7 +16,7 @@ export default function Courses() {
       })
       .catch((error) => {
         console.error("Error fetching courses:", error);
-        setCourseLoaded(true); // ✅ Still mark as loaded to show fallback
+        setCourseLoaded(true);
       });
   }
 
@@ -25,10 +25,10 @@ export default function Courses() {
   }, []);
 
   return (
-    <div className="w-full h-screen p-4">
+    <div className="w-full  p-3  lg:p-4  ">
       {courseLoaded ? (
         courselist.length > 0 ? (
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 ">
             {courselist.map((course, index) => (
               <div key={index}>
                 <CourseCard course={course} />

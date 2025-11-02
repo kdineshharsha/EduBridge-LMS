@@ -19,7 +19,15 @@ const courseSchema = new mongoose.Schema(
     categories: [
       {
         type: String,
-        enum: ["Programming", "Design", "Business", "Language", "Other"],
+        enum: [
+          "Programming",
+          "Design",
+          "Business",
+          "Language",
+          "Other",
+          "UI/UX",
+          "Web Development",
+        ],
         default: "Other",
       },
     ],
@@ -49,8 +57,17 @@ const courseSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
+        default: [],
       },
     ],
+    ratingCount: {
+      type: Number,
+      default: 0,
+    },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

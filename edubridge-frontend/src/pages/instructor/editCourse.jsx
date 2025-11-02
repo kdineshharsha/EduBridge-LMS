@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -45,6 +45,7 @@ export default function EditCourse() {
   const [isPublished, setIsPublished] = useState(false);
   const [isFree, setIsFree] = useState(false);
   const [lessons, setLessons] = useState([]);
+  const fileInputRef = useRef(null);
 
   // Lesson form
   const [lessonTitle, setLessonTitle] = useState("");
@@ -153,18 +154,27 @@ export default function EditCourse() {
 
     try {
       const token = localStorage.getItem("token");
+      setLoading(true);
+      const documentsUrls = await Promise.all(
+        lessonFiles.map(async (file) => {
+          const url = await mediaUpload(file);
+          return url;
+        })
+      );
 
-      let uploadedFileUrl = "";
-      if (lessonFiles) uploadedFileUrl = await mediaUpload(lessonFiles);
+      setLoading(true);
 
       const newLesson = {
         title: lessonTitle,
         content: lessonDescription,
-        videoUrl: lessonLink || uploadedFileUrl,
+        videoUrl: lessonLink,
         duration: duration || 0,
         order: lessons.length + 1,
+        documentsUrls: documentsUrls,
         course: course._id,
       };
+
+      console.log(newLesson);
 
       // ✅ Create new lesson in backend
       const res = await axios.post(
@@ -177,7 +187,12 @@ export default function EditCourse() {
       setLessons([...lessons, res.data.lesson]);
 
       // Reset input fields
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+
       resetLessonForm();
+      setLoading(false);
       toast.success("Lesson added successfully!");
     } catch (error) {
       console.error("Error adding lesson:", error);
@@ -185,7 +200,7 @@ export default function EditCourse() {
     }
   };
 
-  // ✏️ EDIT LESSON - Load data into form
+  // ✏️ EDIT LESSON - Load existing data into form
   const handleEditLesson = (lesson) => {
     setEditingLessonId(lesson._id);
     setLessonTitle(lesson.title);
@@ -532,20 +547,37 @@ export default function EditCourse() {
                 <FaRegFilePdf className="size-4" /> Upload Documents (optional)
               </label>
               <input
+                multiple
+                ref={fileInputRef}
                 type="file"
                 accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
-                onChange={(e) => setLessonFiles(e.target.files[0])}
+                onChange={(e) => {
+                  setLessonFiles(Array.from(e.target.files));
+                }}
                 className="w-full border-2 border-dashed border-gray-300 px-4 py-3 rounded-xl hover:border-purple-500 transition-all cursor-pointer"
               />
             </div>
 
             <div className="flex gap-2 pt-2">
               <button
+                disabled={loading}
                 onClick={editingLessonId ? handleUpdateLesson : handleAddLesson}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+                className={`flex-1 flex items-center justify-center gap-2 
+              bg-gradient-to-r from-green-500 to-emerald-600 
+              text-white font-semibold px-6 py-3 rounded-xl 
+              transition-all duration-200 
+              ${loading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"}`}
               >
-                {editingLessonId ? "💾 Update Lesson" : "+ Add Lesson"}
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    {editingLessonId ? "Updating..." : "Adding..."}
+                  </>
+                ) : (
+                  <>{editingLessonId ? "💾 Update Lesson" : "+ Add Lesson"}</>
+                )}
               </button>
+
               {editingLessonId && (
                 <button
                   onClick={resetLessonForm}
@@ -563,37 +595,40 @@ export default function EditCourse() {
               <h4 className="text-lg font-semibold text-gray-700">
                 Current Lessons ({lessons.length})
               </h4>
-              {lessons.map((lesson, i) => (
-                <div
-                  key={lesson._id}
-                  className="border-2 border-gray-200 rounded-lg p-3 flex justify-between items-center"
-                >
-                  <div className="flex-1">
-                    <span className="font-medium text-gray-800">
-                      {i + 1}. {lesson.title}
-                    </span>
-                    {lesson.videoUrl && (
-                      <div className="flex items-center gap-1 text-xs text-purple-500 mt-1">
-                        <FaEye className="text-purple-500" /> Video
+              {Array.isArray(lessons) &&
+                lessons.map((lesson, i) =>
+                  lesson ? (
+                    <div
+                      key={lesson._id || i}
+                      className="border-2 border-gray-200 rounded-lg p-3 flex justify-between items-center"
+                    >
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-800">
+                          {i + 1}. {lesson.title || "Untitled Lesson"}
+                        </span>
+                        {lesson.videoUrl && (
+                          <div className="flex items-center gap-1 text-xs text-purple-500 mt-1">
+                            <FaEye className="text-purple-500" /> Video
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditLesson(lesson)}
-                      className="border-2 px-3 py-2 rounded-lg border-purple-200 hover:bg-purple-100 transition-colors"
-                    >
-                      <Pencil className="text-blue-600 size-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteLesson(lesson._id)}
-                      className="border-2 px-3 py-2 rounded-lg border-red-200 hover:bg-red-100 transition-colors"
-                    >
-                      <Trash2 className="text-red-600 size-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditLesson(lesson)}
+                          className="border-2 px-3 py-2 rounded-lg border-purple-200 hover:bg-purple-100 transition-colors"
+                        >
+                          <Pencil className="text-blue-600 size-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLesson(lesson._id)}
+                          className="border-2 px-3 py-2 rounded-lg border-red-200 hover:bg-red-100 transition-colors"
+                        >
+                          <Trash2 className="text-red-600 size-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : null
+                )}
             </div>
           )}
         </div>

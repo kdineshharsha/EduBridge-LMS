@@ -25,7 +25,6 @@ const userSchema = mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
   },
   isDisabled: {
     type: Boolean,
@@ -37,6 +36,9 @@ const userSchema = mongoose.Schema({
     required: true,
     default: false,
   },
+  enrolledCourses: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "courses", default: [] },
+  ],
 });
 
 const User = mongoose.model("users", userSchema);

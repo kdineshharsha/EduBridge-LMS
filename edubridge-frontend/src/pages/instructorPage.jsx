@@ -8,6 +8,7 @@ import EditCourse from "./instructor/editCourse";
 import toast from "react-hot-toast";
 import axios from "axios";
 import CourseOverview from "./instructor/couresOverview";
+import AddCourse2 from "./instructor/addCourse copy";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -79,14 +80,14 @@ export default function InstructorPage() {
                 key={item.label}
                 to={item.to}
                 className={({ isActive }) =>
-                  `group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  `group flex items-center gap-4 px-4 py-3 rounded-xl  transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50 border border-blue-200/50"
-                      : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105"
+                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50  border-blue-200/50 "
+                      : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105 "
                   }`
                 }
               >
-                <div className="p-2 rounded-lg bg-blue-500 text-white shadow-lg">
+                <div className="p-2 rounded-lg bg-blue-500  text-white shadow-lg">
                   <IconComponent className="w-5 h-5" />
                 </div>
                 <span className="font-medium">{item.label}</span>
@@ -146,6 +147,7 @@ export default function InstructorPage() {
             <Route path="/courses" element={<InstructorCourses />} />
             <Route path="courses/:id" element={<CourseOverview />} />
             <Route path="courses/add-course" element={<AddCourse />} />
+            {/* <Route path="courses/add-course" element={<AddCourse2 />} /> */}
             <Route path="courses/edit-course/:id" element={<EditCourse />} />
           </Routes>
         </div>
@@ -158,7 +160,7 @@ export default function InstructorPage() {
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
         <p className="text-lg font-semibold text-gray-700 text-center">
-          Validating admin access...
+          Validating Instructor access...
         </p>
       </div>
     </div>

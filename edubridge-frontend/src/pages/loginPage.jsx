@@ -5,11 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import LoginCarousel from "../components/loginCarousel";
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useAuth();
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (response) => {
       axios
@@ -18,7 +19,7 @@ export default function LoginPage() {
         })
         .then((res) => {
           toast.success("Login successful");
-          localStorage.setItem("token", res.data.token);
+          login(res.data.user, res.data.token);
           const user = res.data.user;
           console.log(user);
 
@@ -49,7 +50,8 @@ export default function LoginPage() {
       );
 
       toast.success("Login successful");
-      localStorage.setItem("token", response.data.token);
+      console.log(response.data);
+      login(response.data.user, response.data.token);
 
       const user = response.data.user;
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Clock, BookOpen, User, PlayCircle } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export default function MyCourses() {
   const [courses, setCourses] = useState([]);
@@ -74,7 +75,7 @@ export default function MyCourses() {
                 {/* Course Image */}
                 <div className="relative h-40 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden rounded-t-xl">
                   <img
-                    src={course.thumbnail || "/placeholder.jpg"}
+                    src={course.thumbnail || "placeholder.png"}
                     alt={course.title || "Course Thumbnail"}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -147,10 +148,13 @@ export default function MyCourses() {
                   </div>
 
                   {/* Continue Button */}
-                  <button className="w-full text-center py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold text-sm shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                  <Link
+                    to={`/courses/overview/${course._id}`}
+                    className="w-full text-center py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold text-sm shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                  >
                     <PlayCircle className="w-4 h-4" />
                     Continue Learning
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

@@ -6,6 +6,7 @@ import CourseLessons from "../../components/accordian";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { FcApproval } from "react-icons/fc";
+import Loader from "../../components/loader";
 import Testing from "../testing";
 
 export default function Overview() {
@@ -44,25 +45,36 @@ export default function Overview() {
 
   const handleEnroll = async () => {
     try {
-      console.log(token);
       if (!token) {
-        toast.error("You must be logged in to enroll in a course.");
+        toast.error("You must be logged in to enroll.");
         navigate("/login");
         return;
-      } else {
-        const response = await axios.post(
+      }
+
+      // If course is free → direct enroll (no Stripe)
+      if (course.isFree || course.price === 0) {
+        const res = await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/api/course/enroll/${course._id}`,
           {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        toast.success(response.data.message);
+
+        toast.success(res.data.message || "You are enrolled!");
         setIsLoaded(false);
+        return;
       }
+
+      // If course is PAID → go to Stripe
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/payment/checkout`,
+        { courseId: course._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      window.location.href = res.data.url;
     } catch (error) {
-      console.error("Error enrolling in course:", error);
-      toast.error("Error enrolling in course");
+      console.error("Enroll error:", error);
+      toast.error("Unable to enroll at this moment");
     }
   };
 
@@ -70,7 +82,7 @@ export default function Overview() {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
         <div className="text-gray-600 text-lg animate-pulse">
-          Loading course...
+          <Loader />
         </div>
       </div>
     );
@@ -169,8 +181,10 @@ export default function Overview() {
                       <FcApproval className="text-xl" />
                       Already Enrolled
                     </>
+                  ) : course.isFree || course.price === 0 ? (
+                    "Enroll for Free"
                   ) : (
-                    "Enroll Now"
+                    "Buy Course"
                   )}
                 </button>
                 <p className="text-2xl font-bold text-gray-900">
@@ -210,6 +224,7 @@ export default function Overview() {
             </div>
           )}
         </div>
+        <Testing />
       </div>
     </div>
   );

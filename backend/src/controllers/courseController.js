@@ -2,7 +2,20 @@ import e from "express";
 import Course from "../models/course.js";
 import Lesson from "../models/lesson.js";
 import User from "../models/user.js";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
 
+const transport = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 export async function createCourse(req, res) {
   if (!req.user) {
     return res.status(403).json({
@@ -89,6 +102,9 @@ export async function getCourseById(req, res) {
       ratingAverage: course.ratingAverage,
       ratingCount: course.ratingCount,
       isEnrolled,
+      categories: course.categories,
+      isPublished: course.isPublished,
+      isFree: course.isFree,
       lessons,
     });
   } catch (error) {
@@ -187,6 +203,124 @@ export async function enrollStudent(req, res) {
       $addToSet: { enrolledCourses: course._id },
     });
 
+    const message = {
+      from: process.env.EMAIL,
+      to: req.user.email,
+      subject: "Enrollment Confirmation",
+      html: `
+  <div style="
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f5f7fa;
+    padding: 40px 0;
+    color: #333;
+  ">
+    <div style="
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    ">
+      
+      <!-- Header -->
+      <div style="
+        background: linear-gradient(135deg, #4f46e5, #9333ea);
+        padding: 24px;
+        text-align: center;
+        color: white;
+      ">
+        <h1 style="margin: 0; font-size: 28px; letter-spacing: -0.5px;">
+          🎉 You're Enrolled!
+        </h1>
+      </div>
+
+      <!-- Thumbnail -->
+      <div style="width: 100%; overflow: hidden; max-height: 260px;">
+        <img 
+          src="${course.thumbnail}" 
+          alt="Course Thumbnail" 
+          style="
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+          "
+        />
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 32px;">
+        <h2 style="
+          margin-top: 0;
+          font-size: 24px;
+          color: #111;
+          font-weight: 700;
+        ">
+          Welcome to <span style="color:#4f46e5">${course.title}</span>
+        </h2>
+
+        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          You’re now officially enrolled, sweetheart 💙  
+          Start learning and unlock your next step toward success.
+        </p>
+
+        <!-- Button -->
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="http://localhost:5173/courses/${course._id}" 
+            style="
+              display: inline-block;
+              background: linear-gradient(135deg, #4f46e5, #9333ea);
+              padding: 14px 30px;
+              border-radius: 10px;
+              color: white;
+              text-decoration: none;
+              font-size: 16px;
+              font-weight: 600;
+              box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+            ">
+            Start Learning →
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #666; line-height: 1.6;">
+          If the button doesn’t work, copy this link:
+          <br><br>
+          <span style="color:#4f46e5; word-break: break-all;">
+            http://localhost:5173/courses/${course._id}
+          </span>
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="
+        background: #f3f4f6; 
+        text-align: center; 
+        padding: 16px;
+        font-size: 13px; 
+        color: #777;
+      ">
+        © 2025 Edu-Bridge. All rights reserved.
+      </div>
+
+    </div>
+  </div>
+`,
+    };
+
+    await transport.sendMail(message, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error sending enrollment confirmation email",
+        });
+      } else {
+        return res.status(200).json({
+          message: "Enrollment confirmation email sent successfully",
+        });
+      }
+    });
+
     res.status(200).json({ message: "Enrolled successfully" });
   } catch (error) {
     console.error("Error enrolling student:", error);
@@ -242,5 +376,29 @@ export async function getCoursesbyStudentId(req, res) {
   } catch (error) {
     console.error("Error fetching enrolled course details:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+}
+
+export async function getCoursesByFilter(req, res) {
+  try {
+    const { type, category } = req.query;
+
+    let filter = { isPublished: true };
+
+    if (type === "featured") {
+      filter.isFeatured = true;
+    } else if (type === "free") {
+      filter.isFree = true;
+    } else if (category) {
+      filter.categories = category;
+    }
+
+    const courses = await Course.find(filter)
+      .populate("instructor", "firstName lastName")
+      .exec();
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error("Error fetching filtered courses:", error);
+    res.status(500).json({ message: "Server error" });
   }
 }

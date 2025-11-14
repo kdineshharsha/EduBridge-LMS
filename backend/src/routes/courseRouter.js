@@ -6,6 +6,7 @@ import {
   getAllCourses,
   getCourseById,
   getCourseByInstructor,
+  getCoursesByFilter,
   getCoursesbyStudentId,
   updateCourse,
 } from "../controllers/courseController.js";
@@ -15,9 +16,9 @@ const courseRouter = express.Router();
 
 courseRouter.get("/", getAllCourses);
 courseRouter.post("/create", createCourse);
+courseRouter.get("/filter", getCoursesByFilter);
 courseRouter.get("/:id", getCourseById);
 courseRouter.delete("/:id", deleteCourse);
-
 courseRouter.get("/instructor/:id", getCourseByInstructor);
 courseRouter.put("/update/:id", updateCourse);
 courseRouter.post("/enroll/:id", enrollStudent);

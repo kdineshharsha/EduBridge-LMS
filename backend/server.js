@@ -8,6 +8,9 @@ import userRouter from "./src/routes/userRouter.js";
 import courseRouter from "./src/routes/courseRouter.js";
 import lessonRouter from "./src/routes/lessonRouter.js";
 import reviewRouter from "./src/routes/reviewRouter.js";
+import contactRouter from "./src/routes/contactRouter.js";
+import enrollRouter from "./src/routes/enrollRouter.js";
+import paymentRouter from "./src/routes/paymentRouter.js";
 
 const port = 3000;
 const app = express();
@@ -29,7 +32,10 @@ mongoose
 app.use("/api/user", userRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/contact", contactRouter);
 app.use("/api/course/lesson", lessonRouter);
+app.use("/api/payment", paymentRouter);
+app.use("/api/enroll", enrollRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

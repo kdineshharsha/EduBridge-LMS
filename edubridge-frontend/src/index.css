@@ -3,12 +3,23 @@
 @plugin "@iconify/tailwind4";
 @theme {
   --color-primary: #ff0000;
-  --color-background: #f9f9f9;
+  --color-background: #f9fafb;
   --color-secondary: #ffffff;
   --color-accent: #000000;
   --color-tertiary: #0000ff;
 }
 
+@layer components {
+  :root {
+    --gradient-primary: linear-gradient(
+      to bottom right,
+      #eff6ff,
+      #f5f3ff,
+      #dbeafe
+    );
+    --color-test: red;
+  }
+}
 .poppins-thin {
   font-family: "Poppins", sans-serif;
   font-weight: 100;

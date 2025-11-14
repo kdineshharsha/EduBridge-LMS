@@ -64,9 +64,9 @@ export default function Register() {
         </div>
 
         {/* Right side - Register Form */}
-        <div className="flex w-full lg:w-1/2 h-full bg-gray-900/40 p-10 flex-col justify-center backdrop-blur-2xl rounded-r-xl max-w-2xl">
-          <div className="flex items-center justify-center">
-            <img src="/logo.png" className="size-36" alt="EduBridge Logo" />
+        <div className="flex w-full lg:w-1/2 h-full bg-gray-900/40 p-10 flex-col justify-center backdrop-blur-2xl rounded-r-xl max-w-2xl overflow-y-scroll scrollbar-hide ">
+          <div className="flex items-center justify-center p-8">
+            {/* <img src="/logo.png" className="size-36" alt="EduBridge Logo" /> */}
           </div>
           <h1 className="text-4xl font-bold text-white mb-6 text-center">
             Create an Account
@@ -77,7 +77,7 @@ export default function Register() {
             onSubmit={handleRegister}
             className="flex flex-col gap-4"
           >
-            <div className="flex gap-4">
+            <div className="flex lg:flex-row flex-col gap-4 ">
               <div className="flex-1 flex flex-col">
                 <label className="text-white mb-2">First Name</label>
                 <input

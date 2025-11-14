@@ -57,6 +57,7 @@ export default function EditCourse() {
 
   const categoryOptions = [
     { value: "Programming", label: "Programming" },
+    { value: "Web Development", label: "Web Development" },
     { value: "Design", label: "Design" },
     { value: "Business", label: "Business" },
     { value: "Language", label: "Language" },
@@ -91,6 +92,7 @@ export default function EditCourse() {
         setIsFree(response.data.isFree || false);
         setLessons(response.data.lessons || []);
         setLoading(false);
+        console.log("Course data loaded:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching course data:", error);

@@ -1,14 +1,18 @@
-import React from "react";
 import { Sparkles } from "lucide-react";
+import CourseSection from "../../components/courseSection";
+import Footer from "../../components/fotter";
+import { useNavigate } from "react-router-dom";
+import FeedbackCarousel from "../../components/feedbackCarousel";
 
 export default function HomePage() {
+  const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
+    <div className="min-h-screen bg-background overflow-hidden">
       {/* Hero Section */}
-      <div className="relative flex  md:flex-row items-center justify-between h-auto md:h-screen">
+      <div className="relative flex  md:flex-row items-center justify-between h-auto md:h-screen ">
         {/* Left Section */}
         <div
-          className="relative sm:w-[55%] bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white px-8 md:px-12 py-20 md:py-24 flex flex-col justify-center
+          className="relative sm:w-[55%] bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white px-8 md:px-12 py-10 md:py-24 flex flex-col justify-center
              sm:[clip-path:polygon(0_0,100%_0,85%_100%,0_100%)]"
         >
           {/* Badge */}
@@ -52,7 +56,10 @@ export default function HomePage() {
           </p>
 
           {/* CTA */}
-          <button className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-all w-fit shadow-lg">
+          <button
+            onClick={() => navigate("/courses")}
+            className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-all w-fit shadow-lg"
+          >
             Browse Courses
           </button>
 
@@ -135,6 +142,19 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      <div className="md:mt-24 px-6  ">
+        <CourseSection title="Free Courses" query="type=free" />
+        <CourseSection
+          title="Top Courses in Web Development"
+          query="category=Web Development"
+        />
+        <CourseSection
+          title="Top Courses in Business"
+          query="category=Business"
+        ></CourseSection>
+      </div>
+      <FeedbackCarousel />
+      <Footer />
     </div>
   );
 }

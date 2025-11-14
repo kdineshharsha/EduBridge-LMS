@@ -11,7 +11,7 @@ export default function BottomNavbar() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full lg:hidden bg-white/70 backdrop-blur-xl border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-2xl pt-1 px-2 z-50  transition-all duration-300">
+    <nav className="fixed bottom-0 left-0 w-full lg:hidden bg-white/70 backdrop-blur-xl border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)] rounded-t-2xl pt-1 px-2 z-50  transition-all duration-300">
       <ul className="flex justify-between items-center">
         {navItems.map(({ to, label, icon: Icon, exact }, index) => (
           <li key={index} className="flex-1 flex justify-center">

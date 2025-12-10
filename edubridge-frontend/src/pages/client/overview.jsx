@@ -8,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import { FcApproval } from "react-icons/fc";
 import Loader from "../../components/loader";
 import Testing from "../testing";
+import CommentSection from "../../components/commentSection";
 
 export default function Overview() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -224,8 +225,8 @@ export default function Overview() {
             </div>
           )}
         </div>
-        <Testing />
       </div>
+      <CommentSection courseId={course._id} />
     </div>
   );
 }

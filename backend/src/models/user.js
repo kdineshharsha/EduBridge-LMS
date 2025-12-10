@@ -36,6 +36,13 @@ const userSchema = mongoose.Schema({
     required: true,
     default: false,
   },
+  notifications: {
+    email: { type: Boolean, default: true },
+    courseUpdates: { type: Boolean, default: true },
+    announcements: { type: Boolean, default: true },
+    marketing: { type: Boolean, default: false },
+  },
+
   enrolledCourses: [
     { type: mongoose.Schema.Types.ObjectId, ref: "courses", default: [] },
   ],

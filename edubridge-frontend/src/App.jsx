@@ -11,6 +11,7 @@ import FrontPage from "./pages/frontpage";
 import Testing from "./pages/testing";
 import InstructorPage from "./pages/instructorPage";
 import PaymentSuccess from "./pages/client/paymentSuccess";
+import Settings from "./pages/client/settings";
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/select-role" element={<SelectRole />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/testing" element={<Testing />} />
           <Route path="/admin/*" element={<AdminPage />} />

@@ -11,6 +11,10 @@ import Profile from "./client/profile";
 import MyCourses from "./client/myCourses";
 import AboutUs from "./client/aboutUs";
 import BottomNavbar from "../components/bottomNavbar";
+import Settings from "./client/settings";
+import QuizPage from "./client/quiz/quizPage";
+import QuizResult from "./client/quiz/quizResult";
+import QuizOverview from "./client/quiz/quizOverview";
 export default function FrontPage() {
   return (
     <div className=" w-full bg-background poppins-regular  ">
@@ -25,6 +29,11 @@ export default function FrontPage() {
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/courses/" element={<Courses />} />
           <Route path="/about/" element={<AboutUs />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/quiz/start/:id" element={<QuizPage />} />
+          <Route path="/quiz/overview/:id" element={<QuizOverview />} />
+          <Route path="/quiz/result/:id" element={<QuizResult />} />
+
           <Route path="/courses/overview/:id" element={<Overview />} />
         </Routes>
       </div>

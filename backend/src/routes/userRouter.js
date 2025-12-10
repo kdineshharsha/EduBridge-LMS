@@ -9,6 +9,9 @@ import {
   loginUser,
   saveUser,
   sendOTP,
+  updateNotifications,
+  updatePassword,
+  updateUserProfile,
 } from "../controllers/userController.js";
 
 const userRouter = express.Router();
@@ -21,6 +24,9 @@ userRouter.post("/login", loginUser);
 userRouter.get("/:email", getUserById);
 userRouter.delete("/delete", deleteUser);
 userRouter.post("/sendMail", sendOTP);
+userRouter.put("/update", updateUserProfile);
 userRouter.put("/changePassword", changePassword);
+userRouter.put("/updatePassword", updatePassword);
+userRouter.put("/update-notifications", updateNotifications);
 
 export default userRouter;

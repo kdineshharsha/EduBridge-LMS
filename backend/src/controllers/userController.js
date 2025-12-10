@@ -5,6 +5,10 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 import nodemailer from "nodemailer";
 import OTP from "../models/otp.js";
+import mongoose from "mongoose";
+import Course from "../models/course.js";
+import Review from "../models/review.js";
+
 dotenv.config();
 
 const transport = nodemailer.createTransport({
@@ -527,20 +531,68 @@ export async function getUserById(req, res) {
 }
 
 export async function deleteUser(req, res) {
+  if (!req.user) {
+    return res.status(403).json({
+      message: "You are not authorized to perform this action",
+    });
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    if (!req.user) {
-      return res.status(403).json({
-        message:
-          "You are not authorized to perform this action, please login as admin",
-      });
-    }
-    const deletedUser = await User.findOneAndDelete({ email: req.body.email });
-    if (!deletedUser) {
+    const { email } = req.user;
+
+    console.log(email);
+
+    // 1️⃣ Find user first
+    const user = await User.findOne({ email }).session(session);
+
+    if (!user) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ message: "User not found" });
     }
-    res.json({ message: "User deleted successfully" });
+
+    const userId = user._id;
+
+    // 2️⃣ Delete user account
+    await User.deleteOne({ _id: userId }, { session });
+
+    // 3️⃣ Remove user from enrolledCourses arrays
+    await Course.updateMany(
+      { enrolledStudents: userId },
+      { $pull: { enrolledStudents: userId } },
+      { session }
+    );
+
+    // 4️⃣ Delete reviews made by user
+    await Review.deleteMany({ userId }, { session });
+
+    // 5️⃣ Delete OTPs created by user
+    await OTP.deleteMany({ email: user.email }, { session });
+
+    // 6️⃣ If user is an instructor, remove their courses
+    if (user.role === "instructor") {
+      await Course.deleteMany({ instructor: userId }, { session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return res.json({
+      message: "User and all related data deleted successfully",
+    });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting user" });
+    console.error("Delete user error:", err);
+
+    await session.abortTransaction();
+    session.endSession();
+
+    return res.status(500).json({
+      message: "Error deleting user and related data",
+      error: err.message,
+    });
   }
 }
 
@@ -818,5 +870,109 @@ export async function getCurrentUser(req, res) {
   } catch (err) {
     console.error("Error fetching current user:", err);
     return res.status(500).json({ message: "Server error" });
+  }
+}
+
+export async function updateUserProfile(req, res) {
+  if (!req.user) {
+    return res.status(403).json({
+      message: "Please login to access this resource",
+    });
+  }
+
+  try {
+    const updatedData = {};
+
+    // Update only provided fields
+    if (req.body.firstName) updatedData.firstName = req.body.firstName;
+    if (req.body.lastName) updatedData.lastName = req.body.lastName;
+    if (req.body.phone) updatedData.phone = req.body.phone;
+    if (req.body.email) updatedData.email = req.body.email;
+
+    // Update password only if provided
+    if (req.body.password && req.body.password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      updatedData.password = hashedPassword;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id, // safer than using email
+      updatedData,
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return res.status(500).json({ message: "Error updating profile" });
+  }
+}
+
+export async function updatePassword(req, res) {
+  try {
+    if (!req.user) {
+      return res.status(403).json({
+        message: "Please login to change your password",
+      });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Missing password fields" });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect current password" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Password update error:", error);
+    return res.status(500).json({ message: "Server error updating password" });
+  }
+}
+
+export async function updateNotifications(req, res) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { notifications } = req.body; // { email: true, courseUpdates: false ... }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { notifications },
+      { new: true }
+    );
+
+    res.json({
+      message: "Notification preferences updated",
+      notifications: updatedUser.notifications,
+    });
+  } catch (err) {
+    console.log("Notification Error:", err);
+    res.status(500).json({ message: "Failed to update notifications" });
   }
 }

@@ -1,5 +1,12 @@
-// AboutUs.jsx
 import { Link } from "react-router-dom";
+import {
+  BookOpen,
+  Target,
+  Users,
+  Award,
+  BarChart2,
+  Rocket,
+} from "lucide-react";
 
 export default function AboutUs() {
   return (
@@ -42,12 +49,53 @@ export default function AboutUs() {
             <div className="relative">
               <div className="aspect-[4/3] w-full rounded-2xl bg-white/60 backdrop-blur-sm ring-1 ring-gray-200 shadow-xl p-6">
                 <div className="grid grid-cols-3 gap-4 h-full">
-                  <div className="rounded-xl bg-gradient-to-br from-blue-100 to-blue-200"></div>
-                  <div className="rounded-xl bg-gradient-to-br from-purple-100 to-purple-200"></div>
-                  <div className="rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-200"></div>
-                  <div className="rounded-xl bg-gradient-to-br from-pink-100 to-pink-200"></div>
-                  <div className="rounded-xl bg-gradient-to-br from-teal-100 to-teal-200"></div>
-                  <div className="rounded-xl bg-gradient-to-br from-orange-100 to-orange-200"></div>
+                  {/* Box 1 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1508830524289-0adcbe822b40?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q291cnNlc3xlbnwwfHwwfHx8MA%3D%3D"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+
+                  {/* Box 2 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-purple-100 to-purple-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=60"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+
+                  {/* Box 3 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=60"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+
+                  {/* Box 4 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-pink-100 to-pink-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1612215670548-612dd2de09ed?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTR8fGNlcnRpZmljYXRlfGVufDB8fDB8fHww"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+
+                  {/* Box 5 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-teal-100 to-teal-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=600&q=60"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+
+                  {/* Box 6 */}
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-br from-orange-100 to-orange-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=60"
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -133,10 +181,26 @@ export default function AboutUs() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 md:gap-6">
-            <TeamCard name="Google Cloud Platform" role="Cloud Services" />
-            <TeamCard name="IBM Institute" role="University Partnership" />
-            <TeamCard name="Vimeo" role="Hosting Partner" />
-            <TeamCard name="Stripe" role="Secure Payments" />
+            <TeamCard
+              name="Google Cloud Platform"
+              role="Cloud Services"
+              img_url="https://img.icons8.com/?size=100&id=WHRLQdbEXQ16&format=png&color=000000"
+            />
+            <TeamCard
+              name="IBM Institute"
+              role="University Partnership"
+              img_url="https://img.icons8.com/?size=100&id=31754&format=png&color=000000"
+            />
+            <TeamCard
+              name="Vimeo"
+              role="Hosting Partner"
+              img_url="https://img.icons8.com/?size=100&id=21048&format=png&color=000000"
+            />
+            <TeamCard
+              name="Stripe"
+              role="Secure Payments"
+              img_url="https://img.icons8.com/?size=100&id=vArWbbq0EbTM&format=png&color=000000"
+            />
           </div>
         </div>
       </section>
@@ -192,10 +256,12 @@ function Stat({ label, value }) {
   );
 }
 
-function TeamCard({ name, role }) {
+function TeamCard({ name, role, img_url }) {
   return (
     <div className="flex items-center space-x-4 gap-2 p-2 md:p-4 rounded-xl bg-white ring-1 ring-gray-200 shadow-sm">
-      <div className="size-12  bg-gradient-to-br from-purple-200 to-indigo-200" />
+      <div className="size-12  ">
+        <img src={img_url} alt="" />
+      </div>
       <div>
         <div className="font-semibold text-gray-900">{name}</div>
         <div className="text-sm text-gray-600">{role}</div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 // Utility to extract Vimeo video ID from URL
 const extractVimeoId = (url) => {
@@ -16,8 +17,15 @@ export const AccordionItem = ({
   duration,
   onSelect,
   documentsUrl = [],
+  hasQuiz,
+  quizId,
+  lastAttemptStatus,
+  attemptCount,
+  remainingAttempts,
+  attemptsAllowed,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="border-b border-gray-200 transition-all duration-300">
@@ -43,7 +51,7 @@ export const AccordionItem = ({
         </div>
       </button>
 
-      {/* Accordion Body with animation */}
+      {/* Accordion Body */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
           isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
@@ -52,15 +60,28 @@ export const AccordionItem = ({
         <div className="px-5 py-3 bg-white space-y-3 border-t border-gray-100">
           <p className="text-gray-700 leading-relaxed">{content}</p>
 
-          {videoUrl && (
-            <button
-              onClick={() => onSelect(videoUrl)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all"
-            >
-              ▶ Play Lesson
-            </button>
-          )}
+          <div className=" flex flex-col items-start gap-4 ">
+            {/* PLAY LESSON */}
+            {videoUrl && (
+              <button
+                onClick={() => onSelect(videoUrl)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all"
+              >
+                ▶ Play Lesson
+              </button>
+            )}
+            {/* QUIZ BUTTON */}
+            {hasQuiz && (
+              <button
+                onClick={() => navigate(`/quiz/overview/${quizId}`)}
+                className=" text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 hover:text-white transition-all ring-red-600 ring-2"
+              >
+                📝 Take Quiz
+              </button>
+            )}
+          </div>
 
+          {/* DOCUMENTS */}
           {documentsUrl.length > 0 && (
             <div className="mt-3">
               <p className="text-sm font-semibold text-gray-700">Files:</p>
@@ -77,7 +98,6 @@ export const AccordionItem = ({
                       <a
                         href={url}
                         target="_blank"
-                        rel="noopener noreferrer"
                         className="text-blue-600 hover:underline text-sm"
                       >
                         {name}
@@ -88,6 +108,44 @@ export const AccordionItem = ({
               </ul>
             </div>
           )}
+
+          <div className=" flex justify-between items-center w-full mt-2 ">
+            {/* ATTEMPTS INFO */}
+            {hasQuiz && (
+              <p className="text-xs text-gray-600 mt-1">
+                Attempts:{" "}
+                {attemptsAllowed === null
+                  ? `${attemptCount}/∞`
+                  : `${attemptCount}/${attemptsAllowed}`}
+                {attemptsAllowed !== null &&
+                  remainingAttempts !== undefined &&
+                  ` (Remaining: ${remainingAttempts})`}
+              </p>
+            )}
+
+            {/* QUIZ STATUS BADGE */}
+            {hasQuiz && (
+              <div className="mt-2">
+                {lastAttemptStatus === "passed" && (
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-semibold">
+                    ✔ Passed
+                  </span>
+                )}
+
+                {lastAttemptStatus === "failed" && (
+                  <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs font-semibold">
+                    ✘ Failed
+                  </span>
+                )}
+
+                {lastAttemptStatus === "not_attempted" && (
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-semibold">
+                    • Not Attempted
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -114,6 +172,12 @@ const CourseLessons = ({ lessons = [], thumbnail }) => {
             duration={lesson.duration}
             onSelect={setSelectedVideo}
             documentsUrl={lesson.documentsUrls}
+            hasQuiz={lesson.hasQuiz}
+            quizId={lesson.quizId}
+            lastAttemptStatus={lesson.lastAttemptStatus}
+            attemptCount={lesson.attemptCount}
+            remainingAttempts={lesson.remainingAttempts}
+            attemptsAllowed={lesson.attemptsAllowed}
           />
         ))}
       </div>
@@ -125,7 +189,8 @@ const CourseLessons = ({ lessons = [], thumbnail }) => {
             <iframe
               src={`https://player.vimeo.com/video/${selectedId}?badge=0&autopause=0&player_id=0&app_id=58479`}
               className="absolute top-0 left-0 w-full h-full rounded-lg"
-              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+              allow="autoplay; fullscreen; picture-in-picture; encrypted-media; clipboard-write"
+              allowFullScreen
               referrerPolicy="strict-origin-when-cross-origin"
               title="Lesson Video"
             ></iframe>

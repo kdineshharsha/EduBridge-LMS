@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Hero Section */}
-      <div className="relative flex  md:flex-row items-center justify-between h-auto md:h-screen ">
+      <div className="relative flex  md:flex-row items-center justify-between h-auto md:h-screen bg-[url('bg.png')]">
         {/* Left Section */}
         <div
           className="relative sm:w-[55%] bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white px-8 md:px-12 py-10 md:py-24 flex flex-col justify-center
@@ -87,7 +87,7 @@ export default function HomePage() {
         </div>
 
         {/* Right Section - Hidden on mobile */}
-        <div className="hidden sm:flex w-[45%] items-center justify-center relative ">
+        <div className="hidden sm:flex w-[45%] items-center justify-center relative  ">
           <div className="relative">
             {/* Student Image */}
             <div className="absolute top-0 left-0 w-100 h-100  ring-8 ring-indigo-500 rounded-full"></div>
@@ -122,7 +122,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-gray-900 text-sm">
-                    Adam Smith
+                    Ravi Perera
                   </div>
                   <div className="text-xs text-gray-500 mb-2">
                     Student | Batch 01

@@ -2,6 +2,8 @@ import e from "express";
 import Course from "../models/course.js";
 import Lesson from "../models/lesson.js";
 import User from "../models/user.js";
+import Quiz from "../models/quiz.js";
+import QuizAttempt from "../models/quizAttempt.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
@@ -59,39 +61,71 @@ export async function getCourseById(req, res) {
   try {
     const course = await Course.findById(req.params.id)
       .populate("instructor", "firstName lastName email")
-      .populate("lessons") // 👈 fetch all lessons related to this course
+      .populate("lessons")
       .exec();
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
+
     const userId = req.user?._id;
     const isEnrolled = course.enrolledStudents.some(
       (studentId) => studentId.toString() === userId?.toString()
     );
-    const lessons = course.lessons.map((lesson) => {
-      if (isEnrolled) {
-        return {
-          _id: lesson._id,
-          title: lesson.title,
-          content: lesson.content,
-          videoUrl: lesson.videoUrl,
-          documentsUrls: lesson.documentsUrls,
-          duration: lesson.duration,
-          order: lesson.order,
-        };
-      } else {
-        return {
-          _id: lesson._id,
-          title: lesson.title,
-          content: lesson.content,
-          duration: lesson.duration,
-          order: lesson.order,
-        };
-      }
-    });
 
-    res.json({
+    // 🔥 Build lessons with quiz data
+    const lessons = await Promise.all(
+      course.lessons.map(async (lesson) => {
+        const quiz = await Quiz.findOne({ lesson: lesson._id });
+
+        let attemptCount = 0;
+        let lastAttemptStatus = "not_attempted";
+        let remainingAttempts = quiz ? quiz.attemptsAllowed : null;
+
+        if (quiz && userId) {
+          const attempts = await QuizAttempt.find({
+            user: userId,
+            quiz: quiz._id,
+          })
+            .sort({ createdAt: -1 })
+            .lean();
+
+          attemptCount = attempts.length;
+
+          if (attemptCount > 0) {
+            lastAttemptStatus = attempts[0].isPassed ? "passed" : "failed";
+          }
+
+          // Calculate remaining attempts (only if limited)
+          if (quiz.attemptsAllowed !== null) {
+            remainingAttempts = quiz.attemptsAllowed - attemptCount;
+            if (remainingAttempts < 0) remainingAttempts = 0;
+          }
+        }
+
+        return {
+          _id: lesson._id,
+          title: lesson.title,
+          content: isEnrolled ? lesson.content : undefined,
+          videoUrl: isEnrolled ? lesson.videoUrl : undefined,
+          documentsUrls: isEnrolled ? lesson.documentsUrls : undefined,
+          duration: lesson.duration,
+          order: lesson.order,
+          enrolledStudents: course.enrolledStudents?.length,
+
+          // quiz fields
+          hasQuiz: !!quiz,
+          quizId: isEnrolled && quiz ? quiz._id : undefined,
+          attemptsAllowed:
+            isEnrolled && quiz ? quiz.attemptsAllowed : undefined,
+          attemptCount: isEnrolled ? attemptCount : undefined,
+          remainingAttempts: isEnrolled ? remainingAttempts : undefined,
+          lastAttemptStatus: isEnrolled ? lastAttemptStatus : undefined,
+        };
+      })
+    );
+
+    return res.json({
       _id: course._id,
       title: course.title,
       description: course.description,
@@ -109,7 +143,7 @@ export async function getCourseById(req, res) {
     });
   } catch (error) {
     console.error("Error fetching course by ID:", error);
-    res.status(500).json({ message: "Error fetching course" });
+    return res.status(500).json({ message: "Error fetching course" });
   }
 }
 

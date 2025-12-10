@@ -12,14 +12,17 @@ export default function CourseOverview() {
   const [courses, setCourses] = useState([]);
   const [lessons, setLessons] = useState([]);
   const params = useParams();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (!params.id) window.location.href = "/courses";
 
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/course/${params.id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/course/${params.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
         setCourses(response.data);
         console.log(response.data.lessons);
@@ -73,13 +76,13 @@ export default function CourseOverview() {
               Students Enrollments
             </p>
             <p className="text-2xl font-bold text-gray-900 mt-1">
-              {courses.enrolledStudents.length}
+              {courses.enrolledStudents}
             </p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <p className="text-gray-600 text-sm font-medium">Total Earnings</p>
             <p className="text-2xl font-bold text-green-600 mt-1">
-              {courses.enrolledStudents.length * courses.price}
+              {courses.enrolledStudents * courses.price}
             </p>
           </div>
         </div>

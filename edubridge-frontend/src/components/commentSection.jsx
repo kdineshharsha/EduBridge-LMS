@@ -6,16 +6,18 @@ export default function CommentSection({ courseId }) {
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
-
   // Fetch reviews from backend
   useEffect(() => {
     async function fetchReviews() {
       try {
-        const res = await axios.get(`/api/reviews/${courseId}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/review/${courseId}`
+        );
+        console.log(res.data);
         const fetched = res.data.reviews.map((r) => ({
           id: r._id,
           user: `${r.userId.firstName} ${r.userId.lastName}`,
-          avatar: "https://i.pravatar.cc/150?u=" + r.userId._id,
+          avatar: r.avatar,
           rating: r.rating,
           comment: r.comment,
           time: new Date(r.createdAt).toLocaleDateString(),
@@ -35,17 +37,20 @@ export default function CommentSection({ courseId }) {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "/api/reviews",
+        `
+        ${import.meta.env.VITE_BACKEND_URL}/api/review`,
         { courseId, rating, comment: text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       // Refresh reviews after posting
-      const res = await axios.get(`/api/reviews/${courseId}`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/review/${courseId}`
+      );
       const fetched = res.data.reviews.map((r) => ({
         id: r._id,
         user: `${r.userId.firstName} ${r.userId.lastName}`,
-        avatar: "https://i.pravatar.cc/150?u=" + r.userId._id,
+        avatar: r.avatar,
         rating: r.rating,
         comment: r.comment,
         time: new Date(r.createdAt).toLocaleDateString(),
@@ -69,7 +74,7 @@ export default function CommentSection({ courseId }) {
   const total = comments.length;
 
   return (
-    <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-lg mt-10">
+    <div className="w-full mx-auto bg-white lg:p-16 p-4  shadow-lg mt-10">
       <h2 className="text-2xl font-semibold mb-6">Comments</h2>
 
       {/* TWO COLUMN LAYOUT */}
@@ -138,11 +143,21 @@ export default function CommentSection({ courseId }) {
                 className="border border-gray-200 rounded-2xl p-4 bg-gray-50 hover:shadow-md transition"
               >
                 <div className="flex gap-4">
-                  <img
-                    src={c.avatar}
-                    className="w-12 h-12 rounded-full object-cover"
-                    alt="avatar"
-                  />
+                  {/* Avatar with fallback initials */}
+                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden text-white font-bold text-lg">
+                    {c.avatar ? (
+                      <img
+                        src={c.avatar}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <>
+                        {c.user.split(" ")[0]?.charAt(0).toUpperCase()}
+                        {c.user.split(" ")[1]?.charAt(0).toUpperCase()}
+                      </>
+                    )}
+                  </div>
 
                   <div className="flex-1">
                     <div className="flex justify-between">

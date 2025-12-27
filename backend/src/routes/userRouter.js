@@ -2,6 +2,7 @@ import express from "express";
 import {
   changePassword,
   deleteUser,
+  disableAccount,
   getAllUsers,
   getCurrentUser,
   getUserById,
@@ -28,5 +29,6 @@ userRouter.put("/update", updateUserProfile);
 userRouter.put("/changePassword", changePassword);
 userRouter.put("/updatePassword", updatePassword);
 userRouter.put("/update-notifications", updateNotifications);
+userRouter.put("/disable/:id", disableAccount);
 
 export default userRouter;

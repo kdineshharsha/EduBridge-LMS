@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import CourseOverview from "./instructor/couresOverview";
 import AddCourse2 from "./instructor/addCourse copy";
+import Students from "./instructor/students";
+import StudentOverview from "./instructor/studentOverview";
+import AddQuiz from "./instructor/addQuiz";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -145,10 +148,13 @@ export default function InstructorPage() {
           <Routes>
             <Route path="/dashboard" element={<InstructorDashboard />} />
             <Route path="/courses" element={<InstructorCourses />} />
+            <Route path="/students" element={<Students />} />
+            <Route path="/students/:id" element={<StudentOverview />} />
             <Route path="courses/:id" element={<CourseOverview />} />
             <Route path="courses/add-course" element={<AddCourse />} />
             {/* <Route path="courses/add-course" element={<AddCourse2 />} /> */}
             <Route path="courses/edit-course/:id" element={<EditCourse />} />
+            <Route path="courses/add-quiz/:id" element={<AddQuiz />} />
           </Routes>
         </div>
       </div>

@@ -1,170 +1,205 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { Tag, Clock, CheckCircle, Eye, Pencil, Trash2 } from "lucide-react";
+import { FaPlus, FaSpinner, FaToggleOff, FaToggleOn } from "react-icons/fa";
+import { TbFileDescription } from "react-icons/tb";
 
-export default function CommentSection({ courseId }) {
-  const [comments, setComments] = useState([]);
-  const [text, setText] = useState("");
-  const [rating, setRating] = useState(5);
-  const [loading, setLoading] = useState(false);
+export default function Testing() {
+  const [activeTab, setActiveTab] = useState("details");
+  const [loading] = useState(false);
 
-  // Fetch reviews from backend
-  useEffect(() => {
-    async function fetchReviews() {
-      try {
-        const res = await axios.get(`/api/reviews/${courseId}`);
-        const fetched = res.data.reviews.map((r) => ({
-          id: r._id,
-          user: `${r.userId.firstName} ${r.userId.lastName}`,
-          avatar: "https://i.pravatar.cc/150?u=" + r.userId._id,
-          rating: r.rating,
-          comment: r.comment,
-          time: new Date(r.createdAt).toLocaleDateString(),
-        }));
-        setComments(fetched);
-      } catch (error) {
-        console.error("Failed to fetch reviews", error);
-      }
-    }
-    fetchReviews();
-  }, [courseId]);
+  // Quiz details
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [timeLimit, setTimeLimit] = useState("");
+  const [passMark, setPassMark] = useState("");
+  const [isPublished, setIsPublished] = useState(false);
 
-  async function handleAddComment() {
-    if (!text.trim()) return;
-
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "/api/reviews",
-        { courseId, rating, comment: text },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // Refresh reviews after posting
-      const res = await axios.get(`/api/reviews/${courseId}`);
-      const fetched = res.data.reviews.map((r) => ({
-        id: r._id,
-        user: `${r.userId.firstName} ${r.userId.lastName}`,
-        avatar: "https://i.pravatar.cc/150?u=" + r.userId._id,
-        rating: r.rating,
-        comment: r.comment,
-        time: new Date(r.createdAt).toLocaleDateString(),
-      }));
-      setComments(fetched);
-
-      setText("");
-      setRating(5);
-    } catch (error) {
-      console.error("Failed to post review", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const ratingCounts = [5, 4, 3, 2, 1].map((star) => ({
-    star,
-    count: comments.filter((c) => c.rating === star).length,
-  }));
-
-  const total = comments.length;
+  // Questions
+  const [questions, setQuestions] = useState([]);
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correct, setCorrect] = useState(0);
 
   return (
-    <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-lg mt-10">
-      <h2 className="text-2xl font-semibold mb-6">Comments</h2>
+    <div className="w-full overflow-y-scroll scrollbar-hide h-full bg-secondary p-6 rounded-lg shadow-md">
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-bold">Add Quiz</h1>
+      </div>
 
-      {/* TWO COLUMN LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* LEFT — Rating Summary */}
-        <div className="p-5 bg-gray-100 rounded-xl h-fit md:sticky md:top-5">
-          <h3 className="text-lg font-medium mb-4">Rating Breakdown</h3>
+      {/* Tabs */}
+      <div className="flex my-6">
+        <button
+          onClick={() => setActiveTab("details")}
+          className={`px-6 py-3 font-semibold transition-all ${
+            activeTab === "details"
+              ? "text-purple-600 border-b-2 border-b-blue-500"
+              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+          }`}
+        >
+          Quiz Details
+        </button>
+        <button
+          onClick={() => setActiveTab("questions")}
+          className={`px-6 py-3 font-semibold transition-all ${
+            activeTab === "questions"
+              ? "text-purple-600 border-b-2 border-b-blue-500"
+              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+          }`}
+        >
+          Questions
+        </button>
+      </div>
 
-          {ratingCounts.map((r) => {
-            const percentage = total === 0 ? 0 : (r.count / total) * 100;
-            return (
-              <div key={r.star} className="flex items-center mb-3 gap-3">
-                <span className="w-10 font-medium">{r.star} ★</span>
-                <div className="flex-1 bg-gray-300 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-yellow-400 h-3"
-                    style={{ width: `${percentage}%` }}
-                  ></div>
-                </div>
-                <span className="w-8 text-sm text-gray-700">{r.count}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RIGHT — Add Comment + Comments List */}
-        <div className="md:col-span-2">
-          {/* Add Comment Box */}
-          <div className="mb-6">
-            <textarea
-              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500"
-              placeholder="Write your comment..."
-              rows={3}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
+      {/* ================= DETAILS TAB ================= */}
+      {activeTab === "details" && (
+        <div className="p-8 border-2 rounded-lg border-blue-500 space-y-6">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Tag className="size-4" /> Quiz Title
+            </label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl focus:border-purple-500 focus:outline-none"
+              placeholder="Enter quiz title..."
             />
+          </div>
 
-            <div className="flex items-center gap-2 mt-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className={`text-2xl transition ${
-                    rating >= star ? "text-yellow-400" : "text-gray-400"
-                  }`}
-                >
-                  ★
-                </button>
-              ))}
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <TbFileDescription className="size-4" /> Description
+            </label>
+            <textarea
+              rows="4"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <Clock className="size-4" /> Time Limit (mins)
+              </label>
+              <input
+                value={timeLimit}
+                onChange={(e) => setTimeLimit(e.target.value)}
+                className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl focus:border-purple-500 focus:outline-none"
+              />
             </div>
 
-            <button
-              onClick={handleAddComment}
-              disabled={loading}
-              className="mt-4 bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              {loading ? "Posting..." : "Post Comment"}
-            </button>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <CheckCircle className="size-4" /> Pass Mark (%)
+              </label>
+              <input
+                value={passMark}
+                onChange={(e) => setPassMark(e.target.value)}
+                className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl focus:border-purple-500 focus:outline-none"
+              />
+            </div>
           </div>
 
-          {/* Comments List */}
-          <div className="space-y-5">
-            {comments.map((c) => (
-              <div
-                key={c.id}
-                className="border border-gray-200 rounded-2xl p-4 bg-gray-50 hover:shadow-md transition"
+          {/* Publish Toggle */}
+          <div className="space-y-4 bg-gray-50 p-4 rounded-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Eye className="text-blue-500" />
+                <p className="font-medium">Publish Quiz</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPublished(!isPublished)}
               >
-                <div className="flex gap-4">
-                  <img
-                    src={c.avatar}
-                    className="w-12 h-12 rounded-full object-cover"
-                    alt="avatar"
-                  />
+                {isPublished ? (
+                  <FaToggleOn className="text-blue-500 text-2xl" />
+                ) : (
+                  <FaToggleOff className="text-gray-400 text-2xl" />
+                )}
+              </button>
+            </div>
+          </div>
 
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <h4 className="font-semibold">{c.user}</h4>
-                      <span className="text-sm text-gray-500">{c.time}</span>
-                    </div>
+          <button className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-4 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-3">
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <FaPlus /> Save Quiz
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
-                    <div className="text-yellow-400 text-lg">
-                      {"★".repeat(c.rating)}
-                      <span className="text-gray-400">
-                        {"★".repeat(5 - c.rating)}
-                      </span>
-                    </div>
+      {/* ================= QUESTIONS TAB ================= */}
+      {activeTab === "questions" && (
+        <div className="p-8 border-2 rounded-lg border-blue-500 space-y-6">
+          <h3 className="text-2xl font-semibold text-gray-700">Add Question</h3>
 
-                    <p className="mt-2 text-gray-700">{c.comment}</p>
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl focus:border-purple-500 focus:outline-none"
+            placeholder="Enter question..."
+          />
+
+          {options.map((opt, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <input
+                type="radio"
+                checked={correct === i}
+                onChange={() => setCorrect(i)}
+              />
+              <input
+                value={opt}
+                onChange={(e) => {
+                  const copy = [...options];
+                  copy[i] = e.target.value;
+                  setOptions(copy);
+                }}
+                className="w-full border-2 border-gray-200 px-4 py-2 rounded-xl focus:border-purple-500 focus:outline-none"
+                placeholder={`Option ${i + 1}`}
+              />
+            </div>
+          ))}
+
+          <button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-6 py-3 rounded-xl hover:scale-105 transition-all shadow-md">
+            + Add Question
+          </button>
+
+          {/* Question List UI */}
+          {questions.length > 0 && (
+            <div className="mt-6 space-y-2">
+              <h4 className="text-lg font-semibold text-gray-700">
+                Current Questions ({questions.length})
+              </h4>
+              {questions.map((q, i) => (
+                <div
+                  key={i}
+                  className="border-2 border-gray-200 rounded-lg p-3 flex justify-between items-center"
+                >
+                  <span className="font-medium">
+                    {i + 1}. {q.text}
+                  </span>
+                  <div className="flex gap-2">
+                    <button className="border-2 px-3 py-2 rounded-lg border-purple-200 hover:bg-purple-100">
+                      <Pencil className="size-4 text-blue-600" />
+                    </button>
+                    <button className="border-2 px-3 py-2 rounded-lg border-red-200 hover:bg-red-100">
+                      <Trash2 className="size-4 text-red-600" />
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

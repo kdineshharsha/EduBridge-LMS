@@ -33,6 +33,10 @@ const quizSchema = new mongoose.Schema(
         ref: "quizQuestions",
       },
     ],
+    isPublished: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

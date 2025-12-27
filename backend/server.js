@@ -12,6 +12,7 @@ import contactRouter from "./src/routes/contactRouter.js";
 import enrollRouter from "./src/routes/enrollRouter.js";
 import paymentRouter from "./src/routes/paymentRouter.js";
 import quizRouter from "./src/routes/quizRouter.js";
+import instructorRouter from "./src/routes/instructorRouter.js";
 
 const port = 3000;
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/course/lesson", lessonRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/enroll", enrollRouter);
 app.use("/api/quiz", quizRouter);
+app.use("/api/instructor", instructorRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -976,3 +976,32 @@ export async function updateNotifications(req, res) {
     res.status(500).json({ message: "Failed to update notifications" });
   }
 }
+
+export async function disableAccount(req, res) {
+  try {
+    console.log(req.user);
+    if (
+      !req.user ||
+      (req.user.role !== "instructor" && req.user.role !== "admin")
+    ) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const studentId = req.params.id;
+
+    const student = await User.findById(studentId);
+    if (!studentId) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (student.isDisabled) {
+      await User.findByIdAndUpdate(studentId, { isDisabled: false });
+      return res.json({ message: "Account enabled successfully" });
+    } else {
+      await User.findByIdAndUpdate(studentId, { isDisabled: true });
+      return res.json({ message: "Account disabled successfully" });
+    }
+  } catch (err) {
+    console.log("Disable Account Error:", err);
+    res.status(500).json({ message: "Failed to disable account" });
+  }
+}

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { SlBadge } from "react-icons/sl";
 import toast from "react-hot-toast";
+import Loader from "../../components/Loader";
 
 export default function InstructorCourses() {
   const [courses, setCourses] = useState([]);
@@ -127,11 +128,8 @@ export default function InstructorCourses() {
 
       {/* Loading State */}
       {!isLoaded ? (
-        <div className="flex w-full items-center justify-center h-40">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading courses...</p>
-          </div>
+        <div className="flex w-full h-full items-center justify-center ">
+          <Loader />
         </div>
       ) : courses.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">

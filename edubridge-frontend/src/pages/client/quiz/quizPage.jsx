@@ -25,6 +25,7 @@ export default function QuizPage() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setQuiz(res.data.quiz);
+        console.log("Fetched Quiz:", res.data.quiz);
         // 🕒 If quiz has a time limit (in minutes)
         if (res.data.quiz.timeLimit) {
           setTimeLeft(res.data.quiz.timeLimit * 60); // convert minutes → seconds
@@ -160,11 +161,10 @@ export default function QuizPage() {
           {question.options.map((opt, index) => (
             <label
               key={index}
-              className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${
-                selectedAnswers[question._id] === index
+              className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${selectedAnswers[question._id] === index
                   ? "border-purple-600 bg-purple-50"
                   : "border-gray-300 hover:border-purple-400"
-              }`}
+                }`}
             >
               <input
                 type="radio"
@@ -184,11 +184,10 @@ export default function QuizPage() {
           <button
             onClick={handlePrev}
             disabled={currentQuestionIndex === 0}
-            className={`flex items-center gap-2 px-5 py-2 font-semibold rounded-xl border ${
-              currentQuestionIndex === 0
+            className={`flex items-center gap-2 px-5 py-2 font-semibold rounded-xl border ${currentQuestionIndex === 0
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
-            }`}
+              }`}
           >
             <ArrowLeft className="w-4 h-4" />
             Previous

@@ -42,6 +42,7 @@ export async function createQuiz(req, res) {
     return res.status(201).json({
       message: "Quiz created successfully",
       quiz,
+      quizId: quiz._id,
     });
   } catch (error) {
     console.log("Create Quiz Error:", error);

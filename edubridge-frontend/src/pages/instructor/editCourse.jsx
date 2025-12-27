@@ -14,6 +14,7 @@ import {
   Eye,
   Pencil,
   Trash2,
+  Plus,
 } from "lucide-react";
 import {
   FaPlus,
@@ -227,8 +228,7 @@ export default function EditCourse() {
       };
 
       const res = await axios.put(
-        `${
-          import.meta.env.VITE_BACKEND_URL
+        `${import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/update/${editingLessonId}`,
         updatedLesson,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -258,8 +258,7 @@ export default function EditCourse() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `${
-          import.meta.env.VITE_BACKEND_URL
+        `${import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/delete/${lessonId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -296,21 +295,19 @@ export default function EditCourse() {
       <div className="flex my-6">
         <button
           onClick={() => setActiveTab("details")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "details"
-              ? "text-purple-600 border-b-2 border-b-blue-500"
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "details"
+            ? "text-purple-600 border-b-2 border-b-blue-500"
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Course Details
         </button>
         <button
           onClick={() => setActiveTab("lessons")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "lessons"
-              ? "text-purple-600 border-b-2 border-b-blue-500"
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "lessons"
+            ? "text-purple-600 border-b-2 border-b-blue-500"
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Lessons
         </button>
@@ -626,6 +623,22 @@ export default function EditCourse() {
                           className="border-2 px-3 py-2 rounded-lg border-red-200 hover:bg-red-100 transition-colors"
                         >
                           <Trash2 className="text-red-600 size-4" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/instructor/courses/add-quiz/${lesson._id}`,
+                              {
+                                state: {
+                                  lessonTitle: lesson.title,
+                                  lessonId: lesson._id,
+                                },
+                              }
+                            )
+                          }
+                          className="border-2 px-3 py-2 rounded-lg border-red-200 hover:bg-red-100 transition-colors"
+                        >
+                          <Plus className="text-purple-600 size-4" />
                         </button>
                       </div>
                     </div>

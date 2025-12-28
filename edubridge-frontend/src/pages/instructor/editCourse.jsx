@@ -55,6 +55,8 @@ export default function EditCourse() {
   const [lessonLink, setLessonLink] = useState("");
   const [lessonFiles, setLessonFiles] = useState(null);
   const [editingLessonId, setEditingLessonId] = useState(null);
+  const [quizes, setQuizes] = useState(null);
+  const [quizesId, setQuizesId] = useState(null);
 
   const categoryOptions = [
     { value: "Programming", label: "Programming" },
@@ -210,6 +212,8 @@ export default function EditCourse() {
     setLessonDescription(lesson.content);
     setLessonLink(lesson.videoUrl);
     setDuration(lesson.duration);
+    setQuizes(lesson.hasQuiz);
+    setQuizesId(lesson.quizId);
   };
 
   // 💾 UPDATE LESSON
@@ -228,7 +232,8 @@ export default function EditCourse() {
       };
 
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL
+        `${
+          import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/update/${editingLessonId}`,
         updatedLesson,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -258,7 +263,8 @@ export default function EditCourse() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL
+        `${
+          import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/delete/${lessonId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -295,19 +301,21 @@ export default function EditCourse() {
       <div className="flex my-6">
         <button
           onClick={() => setActiveTab("details")}
-          className={`px-6 py-3 font-semibold transition-all ${activeTab === "details"
-            ? "text-purple-600 border-b-2 border-b-blue-500"
-            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-            }`}
+          className={`px-6 py-3 font-semibold transition-all ${
+            activeTab === "details"
+              ? "text-purple-600 border-b-2 border-b-blue-500"
+              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+          }`}
         >
           Course Details
         </button>
         <button
           onClick={() => setActiveTab("lessons")}
-          className={`px-6 py-3 font-semibold transition-all ${activeTab === "lessons"
-            ? "text-purple-600 border-b-2 border-b-blue-500"
-            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-            }`}
+          className={`px-6 py-3 font-semibold transition-all ${
+            activeTab === "lessons"
+              ? "text-purple-600 border-b-2 border-b-blue-500"
+              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+          }`}
         >
           Lessons
         </button>
@@ -556,6 +564,29 @@ export default function EditCourse() {
                 className="w-full border-2 border-dashed border-gray-300 px-4 py-3 rounded-xl hover:border-purple-500 transition-all cursor-pointer"
               />
             </div>
+            {quizes ? (
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <FaRegFilePdf className="size-4" /> Created Quizzes
+                </label>
+
+                <div className="w-full border-2  border-gray-300 px-4 py-3 rounded-xl flex justify-between items-center">
+                  <span className="text-gray-400">Edit Your Previous Quiz</span>
+                  <button
+                    onClick={() =>
+                      navigate(`/instructor/courses/edit-quiz/${quizesId}`, {
+                        state: {
+                          lessonTitle: lessonTitle,
+                        },
+                      })
+                    }
+                    className="border-2 px-3 py-2 rounded-lg border-purple-200 hover:bg-purple-100 transition-colors"
+                  >
+                    <Pencil className="text-blue-600 size-4" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
 
             <div className="flex gap-2 pt-2">
               <button
@@ -565,7 +596,7 @@ export default function EditCourse() {
               bg-gradient-to-r from-green-500 to-emerald-600 
               text-white font-semibold px-6 py-3 rounded-xl 
               transition-all duration-200 
-              ${loading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"}`}
+              ${loading ? "opacity-70 cursor-not-allowed" : "hover:scale-102"}`}
               >
                 {loading ? (
                   <>
@@ -608,6 +639,11 @@ export default function EditCourse() {
                         {lesson.videoUrl && (
                           <div className="flex items-center gap-1 text-xs text-purple-500 mt-1">
                             <FaEye className="text-purple-500" /> Video
+                            {lesson.hasQuiz && (
+                              <div className="ml-4 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                Quiz Added
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

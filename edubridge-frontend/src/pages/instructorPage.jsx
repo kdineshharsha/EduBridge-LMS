@@ -12,6 +12,7 @@ import AddCourse2 from "./instructor/addCourse copy";
 import Students from "./instructor/students";
 import StudentOverview from "./instructor/studentOverview";
 import AddQuiz from "./instructor/addQuiz";
+import EditQuiz from "./instructor/editQuiz";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -155,6 +156,7 @@ export default function InstructorPage() {
             {/* <Route path="courses/add-course" element={<AddCourse2 />} /> */}
             <Route path="courses/edit-course/:id" element={<EditCourse />} />
             <Route path="courses/add-quiz/:id" element={<AddQuiz />} />
+            <Route path="courses/edit-quiz/:id" element={<EditQuiz />} />
           </Routes>
         </div>
       </div>

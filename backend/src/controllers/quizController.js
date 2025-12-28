@@ -318,3 +318,62 @@ export async function getQuizWithAttempts(req, res) {
     });
   }
 }
+
+export async function updateQuiz(req, res) {
+  try {
+    const { quizId } = req.params;
+
+    const {
+      title,
+      description,
+      timeLimit,
+      attemptsAllowed,
+      passMark,
+      isPublished,
+    } = req.body;
+
+    // Validate quizId
+    if (!quizId) {
+      return res.status(400).json({
+        message: "Quiz ID is required",
+      });
+    }
+
+    // Check quiz exists
+    const quizExists = await Quiz.findById(quizId);
+    if (!quizExists) {
+      return res.status(404).json({
+        message: "Quiz not found",
+      });
+    }
+
+    // Update quiz
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+      quizId,
+      {
+        title,
+        description,
+        timeLimit,
+        attemptsAllowed,
+        passMark,
+        isPublished,
+      },
+      {
+        new: true, // ✅ return updated document
+        runValidators: true, // ✅ enforce schema rules
+      }
+    );
+
+    return res.status(200).json({
+      message: "Quiz updated successfully",
+      quizId: updatedQuiz.id,
+      quiz: updatedQuiz,
+    });
+  } catch (error) {
+    console.error("Update Quiz Error:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}

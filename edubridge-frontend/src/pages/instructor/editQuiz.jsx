@@ -141,10 +141,10 @@ export default function EditQuiz() {
             // ADD QUESTION
             else {
                 const res = await axios.post(
-                    `${import.meta.env.VITE_BACKEND_URL}/api/quiz/add-question`,
+                    `${import.meta.env.VITE_BACKEND_URL}/api/quiz/add-question/`,
                     {
                         quizId,
-                        question,
+                        questionText: question,
                         explanation,
                         options,
                         correctAnswer: correct,

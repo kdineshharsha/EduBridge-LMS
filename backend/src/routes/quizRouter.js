@@ -6,6 +6,7 @@ import {
   getQuizByLesson,
   getQuizWithAttempts,
   submitQuiz,
+  updateQuestion,
   updateQuiz,
 } from "../controllers/quizController.js";
 
@@ -16,6 +17,7 @@ quizRouter.post("/add-question", addQuestion);
 quizRouter.post("/submit", submitQuiz);
 quizRouter.get("/:id", getQuizById);
 quizRouter.put("/update/:quizId", updateQuiz);
+quizRouter.put("/update-question/:questionId", updateQuestion);
 quizRouter.get("/lesson/:id", getQuizByLesson);
 quizRouter.get("/overview/:id", getQuizWithAttempts);
 

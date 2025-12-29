@@ -322,6 +322,7 @@ export async function getQuizWithAttempts(req, res) {
 export async function updateQuiz(req, res) {
   try {
     const { quizId } = req.params;
+    console.log("Updating quiz with ID:", quizId);
 
     const {
       title,
@@ -371,6 +372,49 @@ export async function updateQuiz(req, res) {
     });
   } catch (error) {
     console.error("Update Quiz Error:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function updateQuestion(req, res) {
+  const { questionId } = req.params;
+
+  if (!questionId) {
+    return res.status(400).json({
+      message: "Question ID is required",
+    });
+  }
+  try {
+    const question = await QuizQuestion.findById(questionId);
+    if (!question) {
+      return res.status(404).json({
+        message: "Question not found",
+      });
+    }
+    const { questionText, options, correctAnswer, explanation } = req.body;
+
+    const updatedQuestion = await QuizQuestion.findByIdAndUpdate(
+      questionId,
+      {
+        questionText,
+        options,
+        correctAnswer,
+        explanation,
+      },
+      {
+        new: true, // ✅ return updated document
+        runValidators: true, // ✅ enforce schema rules
+      }
+    );
+    return res.status(200).json({
+      message: "Question updated successfully",
+      question: updatedQuestion,
+    });
+  } catch (error) {
+    console.error("Update Question Error:", error);
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,

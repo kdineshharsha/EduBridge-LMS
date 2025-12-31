@@ -196,34 +196,23 @@ export default function AddCourse2() {
       <div className="flex  my-6 ">
         <button
           onClick={() => setActiveTab("details")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "details"
-              ? "text-purple-600 border-b-2 border-b-blue-500   "
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "details"
+            ? "text-purple-600 border-b-2 border-b-blue-500   "
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Course Details
         </button>
         <button
           onClick={() => setActiveTab("lessons")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "lessons"
-              ? "text-purple-600  border-b-2 border-b-blue-500 "
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "lessons"
+            ? "text-purple-600  border-b-2 border-b-blue-500 "
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Lessons
         </button>
-        <button
-          onClick={() => setActiveTab("quizzes")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "quizzes"
-              ? "text-purple-600 border-b-2 border-b-blue-500"
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
-        >
-          Quizzes
-        </button>
+
       </div>
 
       {activeTab === "details" && (
@@ -528,89 +517,7 @@ export default function AddCourse2() {
           )}
         </div>
       )}
-      {activeTab === "quizzes" && (
-        <div className="p-8 border-2 rounded-lg border-blue-500 space-y-6">
-          <h3 className="text-2xl font-semibold text-gray-700">Add Quizzes</h3>
 
-          {/* Quiz Title */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <Tag className="size-4" />
-              Quiz Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter quiz title..."
-              className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl 
-        focus:border-purple-500 focus:outline-none transition-all"
-            />
-          </div>
-
-          {/* Add Questions UI */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <Tag className="size-4" />
-              Question
-            </label>
-            <textarea
-              placeholder="Enter question..."
-              rows="3"
-              className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl 
-        focus:border-purple-500 focus:outline-none transition-all resize-none"
-            />
-          </div>
-
-          {/* Options */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-700">Options</h4>
-
-            {[1, 2, 3, 4].map((num) => (
-              <input
-                key={num}
-                type="text"
-                placeholder={`Option ${num}`}
-                className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl 
-          focus:border-purple-500 focus:outline-none transition-all"
-              />
-            ))}
-          </div>
-
-          {/* Correct Answer */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Correct Answer
-            </label>
-            <select
-              className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl 
-        focus:border-purple-500 focus:outline-none transition-all"
-            >
-              <option value="">Select correct option</option>
-              <option value="1">Option 1</option>
-              <option value="2">Option 2</option>
-              <option value="3">Option 3</option>
-              <option value="4">Option 4</option>
-            </select>
-          </div>
-
-          {/* Add Question Button */}
-          <button
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105 
-      text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200"
-          >
-            + Add Question
-          </button>
-
-          {/* Added Questions Placeholder */}
-          <div className="mt-6 space-y-2">
-            <h4 className="text-lg font-semibold text-gray-700">
-              Added Questions
-            </h4>
-            <div className="border-2 border-gray-200 rounded-lg p-3">
-              <p className="text-gray-600">No questions added yet...</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -69,8 +69,9 @@ export async function getCourseById(req, res) {
     }
 
     const userId = req.user?._id;
+
     const isEnrolled = course.enrolledStudents.some(
-      (studentId) => studentId.toString() === userId?.toString()
+      (item) => item.user.toString() === userId.toString()
     );
 
     // 🔥 Build lessons with quiz data
@@ -223,13 +224,16 @@ export async function enrollStudent(req, res) {
     }
 
     const alreadyEnrolled = course.enrolledStudents.some(
-      (id) => id && id.equals(userId)
+      (item) => item.user.toString() === userId.toString()
     );
     if (alreadyEnrolled) {
       return res.status(400).json({ message: "Already enrolled" });
     }
 
-    course.enrolledStudents.push(userId);
+    course.enrolledStudents.push({
+      user: userId,
+      enrolledAt: new Date(),
+    });
     console.log(userId);
     await course.save();
 

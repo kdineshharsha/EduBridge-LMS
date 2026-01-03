@@ -5,25 +5,39 @@ export async function enrollAfterPayment(req, res) {
   try {
     const { courseId, userId } = req.body;
 
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
+    if (!courseId || !userId) {
+      return res.status(400).json({ message: "Missing data" });
     }
 
-    if (course.enrolledStudents.includes(userId)) {
+    // 🔒 ATOMIC ENROLLMENT
+    const result = await Course.updateOne(
+      {
+        _id: courseId,
+        "enrolledStudents.user": { $ne: userId },
+      },
+      {
+        $push: {
+          enrolledStudents: {
+            user: userId,
+            enrolledAt: new Date(),
+          },
+        },
+      }
+    );
+
+    // If no document was modified → already enrolled
+    if (result.modifiedCount === 0) {
       return res.json({ message: "Already enrolled" });
     }
 
-    course.enrolledStudents.push(userId);
-    await course.save();
-
+    // Keep user doc in sync (safe even on retries)
     await User.findByIdAndUpdate(userId, {
       $addToSet: { enrolledCourses: courseId },
     });
 
-    res.json({ message: "Enrolled successfully" });
+    return res.json({ message: "Enrolled successfully" });
   } catch (error) {
     console.error("Enroll error:", error);
-    res.status(500).json({ message: "Enrollment failed" });
+    return res.status(500).json({ message: "Enrollment failed" });
   }
 }

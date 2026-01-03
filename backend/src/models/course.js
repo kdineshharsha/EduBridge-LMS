@@ -27,6 +27,9 @@ const courseSchema = new mongoose.Schema(
           "Other",
           "UI/UX",
           "Web Development",
+          "Data Science",
+          "Cybersecurity",
+          "Cloud Computing",
         ],
         default: "Other",
       },
@@ -55,11 +58,18 @@ const courseSchema = new mongoose.Schema(
     ],
     enrolledStudents: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        default: [],
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "users",
+          required: true,
+        },
+        enrolledAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
+
     ratingCount: {
       type: Number,
       default: 0,

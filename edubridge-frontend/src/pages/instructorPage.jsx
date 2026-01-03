@@ -13,6 +13,7 @@ import Students from "./instructor/students";
 import StudentOverview from "./instructor/studentOverview";
 import AddQuiz from "./instructor/addQuiz";
 import EditQuiz from "./instructor/editQuiz";
+import Dashboard from "./instructor/Dashboard/Dashboard";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -84,10 +85,9 @@ export default function InstructorPage() {
                 key={item.label}
                 to={item.to}
                 className={({ isActive }) =>
-                  `group flex items-center gap-4 px-4 py-3 rounded-xl  transition-all duration-200 ${
-                    isActive
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50  border-blue-200/50 "
-                      : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105 "
+                  `group flex items-center gap-4 px-4 py-3 rounded-xl  transition-all duration-200 ${isActive
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50  border-blue-200/50 "
+                    : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105 "
                   }`
                 }
               >
@@ -129,9 +129,8 @@ export default function InstructorPage() {
 
               {/* Status Dot */}
               <span
-                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-                  online ? "bg-green-500" : "bg-red-500"
-                }`}
+                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${online ? "bg-green-500" : "bg-red-500"
+                  }`}
               ></span>
             </div>
 
@@ -147,7 +146,7 @@ export default function InstructorPage() {
         {/* Main Content with routes */}
         <div className="h-full w-full bg-gray-200 md:p-6 rounded-lg">
           <Routes>
-            <Route path="/dashboard" element={<InstructorDashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courses" element={<InstructorCourses />} />
             <Route path="/students" element={<Students />} />
             <Route path="/students/:id" element={<StudentOverview />} />

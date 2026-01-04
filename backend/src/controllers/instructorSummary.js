@@ -169,3 +169,130 @@ export async function getDailyRevenue(req, res) {
     res.status(500).json({ message: "Failed to load daily revenue" });
   }
 }
+
+export async function getTopCourses(req, res) {
+  try {
+    const instructorId = new mongoose.Types.ObjectId(req.user._id);
+
+    const courses = await Course.aggregate([
+      // 1️⃣ Match instructor correctly
+      {
+        $match: {
+          instructor: instructorId,
+        },
+      },
+
+      // 2️⃣ Project safe fields
+      {
+        $project: {
+          title: 1,
+          thumbnail: 1,
+
+          category: {
+            $ifNull: [{ $arrayElemAt: ["$categories", 0] }, "Other"],
+          },
+
+          students: {
+            $size: { $ifNull: ["$enrolledStudents", []] },
+          },
+
+          sales: {
+            $multiply: [
+              { $size: { $ifNull: ["$enrolledStudents", []] } },
+              { $ifNull: ["$price", 0] },
+            ],
+          },
+
+          price: {
+            $cond: [
+              { $eq: ["$price", 0] },
+              "Free",
+              { $concat: ["Rs. ", { $toString: "$price" }] },
+            ],
+          },
+
+          status: {
+            $cond: [{ $eq: ["$isPublished", true] }, "Published", "Draft"],
+          },
+        },
+      },
+
+      // 3️⃣ Sort by revenue first, students second
+      { $sort: { sales: -1, students: -1 } },
+
+      // 4️⃣ Limit
+      { $limit: 5 },
+    ]);
+
+    console.log("Top courses:", courses);
+    res.json(courses);
+  } catch (err) {
+    console.error("Top courses error:", err);
+    res.status(500).json({ message: "Failed to load top courses" });
+  }
+}
+
+export async function getCourseHealth(req, res) {
+  try {
+    const instructorId = new mongoose.Types.ObjectId(req.user._id);
+
+    const result = await Course.aggregate([
+      {
+        $match: { instructor: instructorId },
+      },
+      {
+        $group: {
+          _id: "$isPublished",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    let publishedCourses = 0;
+    let draftCourses = 0;
+
+    for (const item of result) {
+      if (item._id === true) publishedCourses = item.count;
+      if (item._id === false) draftCourses = item.count;
+    }
+
+    res.json({
+      publishedCourses,
+      draftCourses,
+      total: publishedCourses + draftCourses,
+    });
+  } catch (error) {
+    console.error("Course health error:", error);
+    res.status(500).json({ message: "Failed to load course health" });
+  }
+}
+
+export async function getLatestFeedback(req, res) {
+  try {
+    const instructorId = req.user._id;
+
+    const latestReview = await Review.findOne()
+      .populate({
+        path: "courseId",
+        match: { instructor: instructorId },
+        select: "title",
+      })
+      .populate("userId", "firstName lastName")
+      .sort({ createdAt: -1 });
+
+    if (!latestReview || !latestReview.courseId) {
+      return res.json(null);
+    }
+
+    res.json({
+      student: `${latestReview.userId.firstName} ${latestReview.userId.lastName}`,
+      course: latestReview.courseId.title,
+      rating: latestReview.rating,
+      comment: latestReview.comment,
+      date: latestReview.createdAt,
+    });
+  } catch (error) {
+    console.error("Latest feedback error:", error);
+    res.status(500).json({ message: "Failed to load latest feedback" });
+  }
+}

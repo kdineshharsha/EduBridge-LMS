@@ -13,11 +13,19 @@ import {
     PieChart,
     CheckCircle
 } from 'lucide-react';
+import TopPerformingCourses from '../../../components/topPerformingCourses';
+import CourseHealth from '../../../components/courseHealth';
+import LatestFeedback from '../../../components/latestFeedback';
 
 const Dashboard = () => {
 
     const [stats, setStats] = useState(null)
     const [dailyRevenue, setDailyRevenue] = useState([]);
+    const [topCourses, setTopCourses] = useState([]);
+    const [courseHealth, setCourseHealth] = useState(null);
+    const [latestFeedback, setLatestFeedback] = useState(null);
+
+
 
     const token = localStorage.getItem("token");
 
@@ -51,6 +59,70 @@ const Dashboard = () => {
         }
         fetchDailyRevenue();
     }, []);
+
+
+    useEffect(() => {
+        async function fetchTopCourses() {
+            try {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/instructor/top-courses`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                setTopCourses(res.data);
+            } catch (err) {
+                console.error("Top courses fetch error:", err);
+            }
+        }
+
+        fetchTopCourses();
+    }, []);
+
+    useEffect(() => {
+        async function fetchCourseHealth() {
+            try {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/instructor/course-health`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                setCourseHealth(res.data);
+                console.log("Course Health:", res.data);
+            } catch (err) {
+                console.error("Failed to load course health", err);
+            }
+        }
+
+        fetchCourseHealth();
+    }, []);
+
+    useEffect(() => {
+        async function fetchLatestFeedback() {
+            try {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/instructor/latest-feedback`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                setLatestFeedback(res.data);
+                console.log("Latest Feedback:", res.data);
+            } catch (err) {
+                console.error("Failed to load latest feedback", err);
+            }
+        }
+
+        fetchLatestFeedback();
+    }, []);
+
 
     // --- CHART DATA PREPARATION ---
     function normalizeDailyRevenue(data, days = 7) {
@@ -170,12 +242,7 @@ const Dashboard = () => {
         { title: "Avg. Rating", value: stats.avgRating, icon: Star, color: "bg-white text-blue-600 border border-blue-100" },
     ] : [];
 
-    const recentCourses = [
-        { id: 1, title: "Complete React Native Bootcamp 2024", category: "Development", students: 450, sales: 120, price: "$89.99", status: "Published", image: "https://placehold.co/100x100/3b82f6/white?text=RN" },
-        { id: 2, title: "Advanced UI/UX Design Principles", category: "Design", students: 230, sales: 85, price: "$75.00", status: "Draft", image: "https://placehold.co/100x100/ec4899/white?text=UX" },
-        { id: 3, title: "Python for Data Science Masterclass", category: "Data Science", students: 890, sales: 340, price: "$99.99", status: "Published", image: "https://placehold.co/100x100/fbbf24/black?text=PY" },
-        { id: 4, title: "Digital Marketing Fundamentals", category: "Marketing", students: 150, sales: 45, price: "$49.99", status: "Review", image: "https://placehold.co/100x100/10b981/white?text=DM" }
-    ];
+
 
     const recentActivities = [
         { id: 1, user: "Alex Morgan", action: "enrolled in", target: "React Native Bootcamp", time: "2 min ago", icon: Users, color: "bg-blue-50 text-blue-600" },
@@ -279,26 +346,14 @@ const Dashboard = () => {
 
                     {/* Progress & Quick Stats */}
                     <div className="flex flex-col gap-6">
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-bold text-gray-900">Course Status</h2>
-                                <PieChart className="w-5 h-5 text-gray-400" />
-                            </div>
-                            <div className="flex items-center justify-around">
-                                {/* Radial Charts -> Blue */}
-                                <ProgressChart percent={75} color="text-blue-600" label="Completed" />
-                                <ProgressChart percent={45} color="text-emerald-500" label="In Progress" />
-                            </div>
-                        </div>
+                        <CourseHealth
+                            published={courseHealth?.publishedCourses || 0}
+                            draft={courseHealth?.draftCourses || 0}
+                        />
 
-                        {/* Promo Card -> Blue Gradient */}
-                        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden flex-1">
-                            <div className="absolute top-0 right-0 p-4 opacity-10"><BookOpen className="w-24 h-24" /></div>
-                            <h3 className="text-xl font-bold mb-2 relative z-10">Pro Instructor</h3>
-                            <p className="text-blue-100 text-sm mb-4 relative z-10">Unlock advanced analytics and more features.</p>
-                            <button className="bg-white text-blue-600 text-xs font-bold px-4 py-2 rounded-lg relative z-10 hover:bg-blue-50 transition-colors">Upgrade Now</button>
-                        </div>
+                        <LatestFeedback feedback={latestFeedback} />
                     </div>
+
                 </div>
 
                 {/* Bottom Section: Recent Activity + Table */}
@@ -331,48 +386,7 @@ const Dashboard = () => {
                             <h2 className="text-lg font-bold text-gray-900">Top Performing Courses</h2>
                             <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700">View All</a>
                         </div>
-                        <div className="overflow-x-auto flex-1">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50/50">
-                                    <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Course Name</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Category</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Sales</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Status</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase text-right">Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {recentCourses.map((course) => (
-                                        <tr key={course.id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-4">
-                                                    <img src={course.image} alt="" className="w-10 h-10 rounded-lg object-cover shadow-sm" />
-                                                    <div>
-                                                        <div className="font-bold text-gray-900 text-sm">{course.title}</div>
-                                                        <div className="text-xs text-gray-500 mt-0.5">{course.students} students</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4"><span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">{course.category}</span></td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-bold text-gray-700">{course.sales}</span>
-                                                    <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
-                                                        {/* Progress Bar -> Blue */}
-                                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: '60%' }}></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${course.status === "Published" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : course.status === "Draft" ? "bg-gray-50 text-gray-500 border border-gray-100" : "bg-amber-50 text-amber-600 border border-amber-100"}`}>{course.status}</span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right font-bold text-gray-900 text-sm">{course.price}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <TopPerformingCourses courses={topCourses} />
                     </div>
                 </div>
             </main>

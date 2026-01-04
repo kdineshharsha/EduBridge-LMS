@@ -5,7 +5,10 @@ import {
   getStudentsByInstructor,
 } from "../controllers/instructorController.js";
 import {
+  getCourseHealth,
   getDailyRevenue,
+  getLatestFeedback,
+  getTopCourses,
   instructorRevenueChart,
   instructorSummary,
 } from "../controllers/instructorSummary.js";
@@ -16,5 +19,8 @@ instructorRouter.get("/students", getStudentsByInstructor);
 instructorRouter.get("/students/:id", getStudentOverviewByInstructor);
 instructorRouter.get("/summary", instructorSummary);
 instructorRouter.get("/revenue-chart", getDailyRevenue);
+instructorRouter.get("/top-courses", getTopCourses);
+instructorRouter.get("/course-health", getCourseHealth);
+instructorRouter.get("/latest-feedback", getLatestFeedback);
 
 export default instructorRouter;

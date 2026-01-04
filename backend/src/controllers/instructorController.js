@@ -3,29 +3,43 @@ import User from "../models/user.js";
 
 export const getStudentsByInstructor = async (req, res) => {
   try {
-    const instructorId = req.user;
+    const instructorId = req.user._id;
 
-    // 1️⃣ Find all courses by this instructor
+    // 1️⃣ Get instructor's courses
     const courses = await Course.find({ instructor: instructorId }).select(
       "enrolledStudents"
     );
 
     if (!courses.length) {
-      return res.status(404).json({
-        message: "No courses found for this instructor",
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        students: [],
       });
     }
 
-    // 2️⃣ Collect all student IDs
+    // 2️⃣ Collect unique student IDs
     const studentIds = new Set();
 
     courses.forEach((course) => {
-      course.enrolledStudents.forEach((id) => studentIds.add(id.toString()));
+      course.enrolledStudents.forEach((entry) => {
+        if (entry.user) {
+          studentIds.add(entry.user.toString());
+        }
+      });
     });
 
-    const studentIdArray = [...studentIds];
+    const studentIdArray = Array.from(studentIds);
 
-    // 3️⃣ Fetch full student data
+    if (!studentIdArray.length) {
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        students: [],
+      });
+    }
+
+    // 3️⃣ Fetch student details
     const students = await User.find({
       _id: { $in: studentIdArray },
       role: "student",
@@ -57,20 +71,20 @@ export const getStudentOverviewByInstructor = async (req, res) => {
     const instructorId = req.user._id;
     const studentId = req.params.id;
 
-    // 1️⃣ get student
+    // 1️⃣ Get student
     const student = await User.findById(studentId).select("-password");
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // 2️⃣ get ONLY instructor's courses where student is enrolled
+    // 2️⃣ Get ONLY instructor's courses where student is enrolled
     const courses = await Course.find({
       instructor: instructorId,
-      enrolledStudents: studentId,
+      "enrolledStudents.user": studentId,
     }).select("title thumbnail price isPublished createdAt");
 
-    res.json({
+    res.status(200).json({
       student,
       courses,
     });

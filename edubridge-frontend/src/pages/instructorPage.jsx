@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { House, BookOpen, Users, Settings } from "lucide-react";
 import InstructorDashboard from "./instructor/instructorDashboard";
 import InstructorCourses from "./instructor/instructor_courses";
@@ -146,6 +146,8 @@ export default function InstructorPage() {
         {/* Main Content with routes */}
         <div className="h-full w-full bg-gray-200 md:p-6 rounded-lg">
           <Routes>
+            <Route index element={<Navigate to="dashboard" replace />} />
+
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courses" element={<InstructorCourses />} />
             <Route path="/students" element={<Students />} />

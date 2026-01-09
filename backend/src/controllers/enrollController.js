@@ -1,10 +1,12 @@
 import Course from "../models/course.js";
 import User from "../models/user.js";
+import mongoose from "mongoose";
 
 export async function enrollAfterPayment(req, res) {
   try {
     const { courseId, userId } = req.body;
 
+    console.log("Enroll request:", { courseId, userId });
     if (!courseId || !userId) {
       return res.status(400).json({ message: "Missing data" });
     }
@@ -24,6 +26,8 @@ export async function enrollAfterPayment(req, res) {
         },
       }
     );
+
+    console.log("Enroll result:", result);
 
     // If no document was modified → already enrolled
     if (result.modifiedCount === 0) {

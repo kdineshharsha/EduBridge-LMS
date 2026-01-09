@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Tag, Clock, CheckCircle, Eye, Pencil, Trash2 } from "lucide-react";
 import { FaPlus, FaSpinner, FaToggleOff, FaToggleOn } from "react-icons/fa";
 import { TbFileDescription } from "react-icons/tb";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ export default function AddQuiz() {
     const locationData = useLocation().state;
     const [activeTab, setActiveTab] = useState("details");
     const [loading] = useState(false);
+    const navigate = useNavigate();
 
     // Quiz details
     const [title, setTitle] = useState("");
@@ -73,6 +74,7 @@ export default function AddQuiz() {
             }
 
             toast.success("Quiz & questions created successfully 🎉");
+            navigate(-1);
             console.log("Quiz ID:", quizId);
         } catch (error) {
             console.error(error);

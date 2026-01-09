@@ -14,6 +14,7 @@ import StudentOverview from "./instructor/studentOverview";
 import AddQuiz from "./instructor/addQuiz";
 import EditQuiz from "./instructor/editQuiz";
 import Dashboard from "./instructor/Dashboard/Dashboard";
+import InstructorSettings from "./instructor/instructorSettings";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -151,6 +152,7 @@ export default function InstructorPage() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courses" element={<InstructorCourses />} />
             <Route path="/students" element={<Students />} />
+            <Route path="/settings" element={<InstructorSettings />} />
             <Route path="/students/:id" element={<StudentOverview />} />
             <Route path="courses/:id" element={<CourseOverview />} />
             <Route path="courses/add-course" element={<AddCourse />} />

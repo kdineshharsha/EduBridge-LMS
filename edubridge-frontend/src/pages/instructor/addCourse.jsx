@@ -44,6 +44,11 @@ export default function AddCourse2() {
     { value: "Design", label: "Design" },
     { value: "Business", label: "Business" },
     { value: "Language", label: "Language" },
+    { value: "UI/UX", label: "UI/UX" },
+    { value: "Web Development", label: "Web Development" },
+    { value: "Data Science", label: "Data Science" },
+    { value: "Cybersecurity", label: "Cybersecurity" },
+    { value: "Cloud Computing", label: "Cloud Computing" },
     { value: "Other", label: "Other" },
   ];
 

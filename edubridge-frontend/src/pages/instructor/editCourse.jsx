@@ -65,6 +65,9 @@ export default function EditCourse() {
     { value: "Business", label: "Business" },
     { value: "Language", label: "Language" },
     { value: "UI/UX", label: "UI/UX" },
+    { value: "Data Science", label: "Data Science" },
+    { value: "Cybersecurity", label: "Cybersecurity" },
+    { value: "Cloud Computing", label: "Cloud Computing" },
     { value: "Other", label: "Other" },
   ];
 
@@ -232,8 +235,7 @@ export default function EditCourse() {
       };
 
       const res = await axios.put(
-        `${
-          import.meta.env.VITE_BACKEND_URL
+        `${import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/update/${editingLessonId}`,
         updatedLesson,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -263,8 +265,7 @@ export default function EditCourse() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `${
-          import.meta.env.VITE_BACKEND_URL
+        `${import.meta.env.VITE_BACKEND_URL
         }/api/course/lesson/delete/${lessonId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -301,21 +302,19 @@ export default function EditCourse() {
       <div className="flex my-6">
         <button
           onClick={() => setActiveTab("details")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "details"
-              ? "text-purple-600 border-b-2 border-b-blue-500"
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "details"
+            ? "text-purple-600 border-b-2 border-b-blue-500"
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Course Details
         </button>
         <button
           onClick={() => setActiveTab("lessons")}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "lessons"
-              ? "text-purple-600 border-b-2 border-b-blue-500"
-              : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
-          }`}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "lessons"
+            ? "text-purple-600 border-b-2 border-b-blue-500"
+            : "text-gray-500 hover:text-purple-500 border-b-white border-b-2"
+            }`}
         >
           Lessons
         </button>

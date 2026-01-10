@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
-import { House, BookOpen, Users, Settings } from "lucide-react";
+import { House, BookOpen, Users, Settings, LogOutIcon } from "lucide-react";
 import InstructorDashboard from "./instructor/instructorDashboard";
 import InstructorCourses from "./instructor/instructor_courses";
 import AddCourse from "./instructor/addCourse";
@@ -51,6 +51,12 @@ export default function InstructorPage() {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
+
   // async function checkInternet() {
   //   try {
   //     const response = await fetch("https://www.google.com/favicon.ico", {
@@ -74,11 +80,11 @@ export default function InstructorPage() {
 
   return userValidated ? (
     <div className="flex h-screen w-full bg-white poppins-regular">
-      <div className="h-full w-72 hidden lg:block p-4  ">
+      <div className="h-full w-72 hidden lg:flex flex-col p-4">
         <div className="w-full flex justify-center">
           <img src="/logo.png" className="size-50" alt="" />
         </div>
-        <nav className="space-y-2 ">
+        <nav className="space-y-2 flex-1">
           {navItems.map((item) => {
             const IconComponent = item.icon;
             return (
@@ -86,13 +92,13 @@ export default function InstructorPage() {
                 key={item.label}
                 to={item.to}
                 className={({ isActive }) =>
-                  `group flex items-center gap-4 px-4 py-3 rounded-xl  transition-all duration-200 ${isActive
-                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50  border-blue-200/50 "
-                    : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105 "
+                  `group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50"
+                    : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105"
                   }`
                 }
               >
-                <div className="p-2 rounded-lg bg-blue-500  text-white shadow-lg">
+                <div className="p-2 rounded-lg bg-blue-500 text-white shadow-lg">
                   <IconComponent className="w-5 h-5" />
                 </div>
                 <span className="font-medium">{item.label}</span>
@@ -100,6 +106,20 @@ export default function InstructorPage() {
             );
           })}
         </nav>
+        <button
+          onClick={handleLogout}
+          className="mt-4 flex items-center gap-4 px-4 py-3 rounded-xl
+             text-red-600 hover:bg-red-50 transition-all duration-200
+             hover:shadow-md group"
+        >
+          <div className="p-2 rounded-lg bg-red-500 text-white shadow-lg group-hover:scale-105 transition">
+            <LogOutIcon className="w-5 h-5" />
+          </div>
+          <span className="font-medium">Logout</span>
+        </button>
+
+
+
       </div>
       <div className="flex-1 flex flex-col h-full ">
         {/* Header */}

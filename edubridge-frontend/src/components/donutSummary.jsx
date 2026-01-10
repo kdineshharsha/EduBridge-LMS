@@ -1,9 +1,13 @@
 import Chart from "react-apexcharts";
 import { PieChart } from "lucide-react";
 
-export default function CourseHealth({ published = 0, draft = 0 }) {
-    const total = published + draft || 1;
-    const series = [published, draft];
+export default function DonutSummaryChart({
+    title = "Summary",
+    labels = [],
+    values = [],
+    totalLabel = "Total",
+}) {
+    const total = values.reduce((sum, v) => sum + v, 0) || 1;
 
     const options = {
         chart: {
@@ -30,7 +34,7 @@ export default function CourseHealth({ published = 0, draft = 0 }) {
             },
         },
 
-        labels: ["Published", "Draft"],
+        labels,
 
         colors: ["#2563eb", "#93c5fd"],
 
@@ -80,7 +84,7 @@ export default function CourseHealth({ published = 0, draft = 0 }) {
                         },
                         total: {
                             show: true,
-                            label: "Total Courses",
+                            label: totalLabel,
                             fontSize: "13px",
                             fontWeight: 600,
                             color: "#6b7280",
@@ -98,41 +102,19 @@ export default function CourseHealth({ published = 0, draft = 0 }) {
         tooltip: {
             theme: "light",
             y: {
-                formatter: (val) => `${val} courses`,
-            },
-        },
-
-        states: {
-            hover: {
-                filter: {
-                    type: "lighten",
-                    value: 0.05,
-                },
-            },
-            active: {
-                filter: {
-                    type: "darken",
-                    value: 0.1,
-                },
+                formatter: (val) => `${val}`,
             },
         },
     };
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Course Health</h2>
+                <h2 className="text-lg font-bold text-gray-900">{title}</h2>
                 <PieChart className="w-5 h-5 text-gray-400" />
             </div>
 
-            {/* Chart */}
-            <Chart options={options} series={series} type="donut" height={270} />
-
-            {/* Footer */}
-            <p className="mt-3 text-xs text-gray-500 text-center">
-                Keep more courses published to improve visibility
-            </p>
+            <Chart options={options} series={values} type="donut" height={270} />
         </div>
     );
 }

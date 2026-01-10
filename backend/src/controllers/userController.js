@@ -262,7 +262,7 @@ export async function googleLogin(req, res) {
 
       const message = {
         from: process.env.EMAIL,
-        to: req.body.email,
+        to: response.data.email,
         subject: "Welcome to Our Service!",
         html: `
   <div style="
@@ -414,12 +414,12 @@ export async function googleLogin(req, res) {
       });
 
       const userData = {
-        _id: user._id,
-        email: response.data.email,
-        firstName: response.data.given_name,
-        lastName: response.data.family_name,
-        role: "user",
-        phone: "Not given",
+        _id: newUser._id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        role: newUser.role,
+        phone: newUser.phone,
         isDisabled: false,
         isEmailVerified: true,
       };

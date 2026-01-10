@@ -14,8 +14,8 @@ import {
     CheckCircle
 } from 'lucide-react';
 import TopPerformingCourses from '../../../components/topPerformingCourses';
-import CourseHealth from '../../../components/courseHealth';
 import LatestFeedback from '../../../components/latestFeedback';
+import DonutSummaryChart from '../../../components/donutSummary';
 
 const Dashboard = () => {
 
@@ -346,10 +346,19 @@ const Dashboard = () => {
 
                     {/* Progress & Quick Stats */}
                     <div className="flex flex-col gap-6">
-                        <CourseHealth
-                            published={courseHealth?.publishedCourses || 0}
-                            draft={courseHealth?.draftCourses || 0}
+                        <DonutSummaryChart
+                            title="Course Health"
+                            labels={[
+                                `Published (${courseHealth ? courseHealth.published : 0})`,
+                                `Draft (${courseHealth ? courseHealth.draft : 0})`,
+                            ]}
+                            values={[
+                                courseHealth ? courseHealth.published : 0,
+                                courseHealth ? courseHealth.draft : 0,
+                            ]}
+                            totalLabel="Total Courses"
                         />
+
 
                         <LatestFeedback feedback={latestFeedback} />
                     </div>

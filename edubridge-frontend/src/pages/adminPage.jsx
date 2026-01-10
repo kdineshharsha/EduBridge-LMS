@@ -1,69 +1,55 @@
-import React, { useState } from "react";
-import {
-  NavLink,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-} from "react-router-dom";
-import {
-  FaHome,
-  FaUsers,
-  FaBoxOpen,
-  FaClipboardList,
-  FaBullhorn,
-  FaSignOutAlt,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
-import { FaTags } from "react-icons/fa6";
-
+import React, { useEffect, useState } from "react";
+import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { House, BookOpen, Users, Settings, LogOutIcon } from "lucide-react";
+import InstructorDashboard from "./instructor/instructorDashboard";
+import InstructorCourses from "./instructor/instructor_courses";
+import AddCourse from "./instructor/addCourse";
+import EditCourse from "./instructor/editCourse";
 import toast from "react-hot-toast";
-import Users from "./admin/users";
-import AdminDashboard from "./admin/dashboard";
+import axios from "axios";
+import CourseOverview from "./instructor/couresOverview";
+import AddCourse2 from "./instructor/addCourse copy";
+import Students from "./instructor/students";
+import StudentOverview from "./instructor/studentOverview";
+import AddQuiz from "./instructor/addQuiz";
+import EditQuiz from "./instructor/editQuiz";
+import InstructorSettings from "./instructor/instructorSettings";
+import AdminDashboard from "./admin/Dashboard/dashboard";
 
-export default function AdminPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function InstructorPage() {
+  const [userValidated, setUserValidated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [online, setOnline] = useState(true);
   const navigate = useNavigate();
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      icon: <FaHome />,
-      to: "/admin/dashboard",
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      name: "Users",
-      icon: <FaUsers />,
-      to: "/admin/users",
-      color: "from-purple-500 to-purple-600",
-    },
-    {
-      name: "Products",
-      icon: <FaBoxOpen />,
-      to: "/admin/products",
-      color: "from-green-500 to-green-600",
-    },
-    {
-      name: "Orders",
-      icon: <FaClipboardList />,
-      to: "/admin/orders",
-      color: "from-orange-500 to-orange-600",
-    },
-    {
-      name: "Sales",
-      icon: <FaTags />,
-      to: "/admin/sales",
-      color: "from-pink-500 to-pink-600",
-    },
-    {
-      name: "Promotions",
-      icon: <FaBullhorn />,
-      to: "/admin/promo",
-      color: "from-indigo-500 to-indigo-600",
-    },
-  ];
+  useEffect(() => {
+    // checkInternet();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You are not logged in");
+      navigate("/login");
+    } else {
+      axios
+        .get(import.meta.env.VITE_BACKEND_URL + "/api/user/current", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data.user.role === "admin") {
+            setUserValidated(true);
+            console.log(response.data.user);
+            setUser(response.data.user);
+          } else {
+            toast.error("Unauthorized ");
+            navigate("/login");
+          }
+        })
+        .catch((error) => {
+          toast.error("Error validating user");
+          console.error("Error validating user:", error);
+          navigate("/login");
+        });
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -71,130 +57,129 @@ export default function AdminPage() {
     navigate("/login");
   };
 
-  return (
-    <div className="flex h-screen w-full poppins-regular bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
 
-      {/* Sidebar */}
-      <div
-        className={`${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full "
-        } lg:translate-x-0 fixed lg:relative z-50 w-72 h-full bg-white/80 backdrop-blur-xl border-r border-white/20 shadow-2xl transition-transform duration-300 ease-in-out flex flex-col  rounded-r-2xl`}
-      >
-        {/* Header */}
-        <div className="relative p-6 border-b border-gray-200/50">
-          <div className="flex items-center justify-between">
-            <img src="/logo.png" alt="logo" className="w-40 h-auto" />
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100/80 transition-colors"
-            >
-              <FaTimes className="w-5 h-5 text-gray-600" />
-            </button>
+  const navItems = [
+    { to: "/admin/dashboard", label: "Dashboard", icon: House },
+    { to: "/admin/courses", label: "Courses", icon: BookOpen },
+    { to: "/admin/students", label: "Students", icon: Users },
+    { to: "/admin/settings", label: "Settings", icon: Settings },
+  ];
+
+  return userValidated ? (
+    <div className="flex h-screen w-full bg-white poppins-regular">
+      <div className="h-full w-72 hidden lg:flex flex-col p-4">
+        <div className="w-full flex justify-center">
+          <img src="/logo.png" className="size-50" alt="" />
+        </div>
+        <nav className="space-y-2 flex-1">
+          {navItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                className={({ isActive }) =>
+                  `group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50"
+                    : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105"
+                  }`
+                }
+              >
+                <div className="p-2 rounded-lg bg-blue-500 text-white shadow-lg">
+                  <IconComponent className="w-5 h-5" />
+                </div>
+                <span className="font-medium">{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+        <button
+          onClick={handleLogout}
+          className="mt-4 flex items-center gap-4 px-4 py-3 rounded-xl
+             text-red-600 hover:bg-red-50 transition-all duration-200
+             hover:shadow-md group"
+        >
+          <div className="p-2 rounded-lg bg-red-500 text-white shadow-lg group-hover:scale-105 transition">
+            <LogOutIcon className="w-5 h-5" />
           </div>
+          <span className="font-medium">Logout</span>
+        </button>
 
-          {/* Admin Profile Card */}
-          <div className="mt-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-200/30">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">A</span>
+
+
+      </div>
+      <div className="flex-1 flex flex-col h-full ">
+        {/* Header */}
+        <div className="bg-white sticky top-0 z-100 w-full flex items-center justify-between p-4">
+          <div className="">
+            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <p className="text-sm text-gray-500">Welcome Back, Admin</p>
+          </div>
+          {/* Profile Section */}
+
+          <div className="flex space-x-4 items-center">
+            <div className="relative">
+              {/* Avatar */}
+              <div className="size-10 bg-blue-500 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm">
+                {user.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    {user.firstName.charAt(0).toUpperCase()}
+                    {user.lastName?.charAt(0).toUpperCase()}
+                  </>
+                )}
               </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-800">Admin</p>
-                <p className="text-xs text-gray-500">Administrator</p>
-              </div>
+
+              {/* Status Dot */}
+              <span
+                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${online ? "bg-green-500" : "bg-red-500"
+                  }`}
+              ></span>
+            </div>
+
+            {/* User Info */}
+            <div>
+              <h1 className="text-sm font-medium">
+                {user.firstName + " " + user.lastName}
+              </h1>
+              <p className="text-sm text-gray-500">{user.email}</p>
             </div>
           </div>
         </div>
+        {/* Main Content with routes */}
+        <div className="h-full w-full bg-gray-200 md:p-6 rounded-lg">
+          <Routes>
+            <Route index element={<Navigate to="dashboard" replace />} />
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 ">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.to}
-              className={({ isActive }) =>
-                `group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-200/50 border border-blue-200/50"
-                    : "text-gray-700 hover:bg-gray-100/80 hover:shadow-md hover:scale-105"
-                }`
-              }
-            >
-              <div
-                className={`p-2 rounded-lg bg-gradient-to-r ${item.color} text-white shadow-lg`}
-              >
-                <span className="text-sm">{item.icon}</span>
-              </div>
-              <span className="font-medium">{item.name}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200/50">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-colors group"
-          >
-            <FaSignOutAlt className="text-lg group-hover:scale-110 transition-transform" />
-            <span className="font-medium">Logout</span>
-          </button>
-          <div className="mt-3 text-center text-xs text-gray-400">
-            © {new Date().getFullYear()} Admin Panel
-          </div>
+            <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/courses" element={<InstructorCourses />} />
+            <Route path="/students" element={<Students />} />
+            <Route path="/settings" element={<InstructorSettings />} />
+            <Route path="/students/:id" element={<StudentOverview />} />
+            <Route path="courses/:id" element={<CourseOverview />} />
+            <Route path="courses/add-course" element={<AddCourse />} />
+            {/* <Route path="courses/add-course" element={<AddCourse2 />} /> */}
+            <Route path="courses/edit-course/:id" element={<EditCourse />} />
+            <Route path="courses/add-quiz/:id" element={<AddQuiz />} />
+            <Route path="courses/edit-quiz/:id" element={<EditQuiz />} />
+          </Routes>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
-        <div className="bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm p-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100/80 transition-colors"
-            >
-              <FaBars className="w-5 h-5 text-gray-600" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Admin Dashboard
-              </h1>
-              <p className="text-sm text-gray-500">
-                Welcome back, Administrator
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium text-green-700">Online</span>
-            </div>
-          </div>
+    </div>
+  ) : (
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/20">
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-
-        {/* Content Area */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-full">
-            <Routes>
-              <Route
-                path="/"
-                element={<Navigate to="/admin/dashboard" replace />}
-              />
-              <Route path="dashboard" element={<AdminDashboard />} />
-
-              <Route path="users" element={<Users />} />
-            </Routes>
-          </div>
-        </div>
+        <p className="text-lg font-semibold text-gray-700 text-center">
+          Validating Instructor access...
+        </p>
       </div>
     </div>
   );

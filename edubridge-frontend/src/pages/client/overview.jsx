@@ -171,11 +171,10 @@ export default function Overview() {
                 <button
                   onClick={handleEnroll}
                   disabled={isEnrolled}
-                  className={`px-6 py-3 font-semibold rounded-xl transition-all flex items-center gap-2 ${
-                    isEnrolled
+                  className={`px-6 py-3 font-semibold rounded-xl transition-all flex items-center gap-2 ${isEnrolled
                       ? "bg-gray-400 cursor-not-allowed text-white"
                       : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg"
-                  }`}
+                    }`}
                 >
                   {isEnrolled ? (
                     <>

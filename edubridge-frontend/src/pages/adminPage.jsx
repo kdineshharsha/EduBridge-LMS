@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { House, BookOpen, Users, Settings, LogOutIcon } from "lucide-react";
-import InstructorDashboard from "./instructor/instructorDashboard";
-import InstructorCourses from "./instructor/instructor_courses";
 import AddCourse from "./instructor/addCourse";
-import EditCourse from "./instructor/editCourse";
 import toast from "react-hot-toast";
 import axios from "axios";
 import CourseOverview from "./instructor/couresOverview";
-import AddCourse2 from "./instructor/addCourse copy";
-import Students from "./instructor/students";
 import StudentOverview from "./instructor/studentOverview";
 import AddQuiz from "./instructor/addQuiz";
 import EditQuiz from "./instructor/editQuiz";
 import InstructorSettings from "./instructor/instructorSettings";
 import AdminDashboard from "./admin/Dashboard/dashboard";
+import AdminCourses from "./admin/adminCourses";
+import EditCourse from "./admin/manageCourse";
+import AdminUsers from "./admin/users";
+import AdminUserOverview from "./admin/adminUserOverview";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -61,7 +60,7 @@ export default function InstructorPage() {
   const navItems = [
     { to: "/admin/dashboard", label: "Dashboard", icon: House },
     { to: "/admin/courses", label: "Courses", icon: BookOpen },
-    { to: "/admin/students", label: "Students", icon: Users },
+    { to: "/admin/users", label: "Users", icon: Users },
     { to: "/admin/settings", label: "Settings", icon: Settings },
   ];
 
@@ -157,13 +156,12 @@ export default function InstructorPage() {
             <Route index element={<Navigate to="dashboard" replace />} />
 
             <Route path="/dashboard" element={<AdminDashboard />} />
-            <Route path="/courses" element={<InstructorCourses />} />
-            <Route path="/students" element={<Students />} />
+            <Route path="/courses" element={<AdminCourses />} />
+            <Route path="/users" element={<AdminUsers />} />
             <Route path="/settings" element={<InstructorSettings />} />
-            <Route path="/students/:id" element={<StudentOverview />} />
+            <Route path="/users/:id" element={<AdminUserOverview />} />
             <Route path="courses/:id" element={<CourseOverview />} />
             <Route path="courses/add-course" element={<AddCourse />} />
-            {/* <Route path="courses/add-course" element={<AddCourse2 />} /> */}
             <Route path="courses/edit-course/:id" element={<EditCourse />} />
             <Route path="courses/add-quiz/:id" element={<AddQuiz />} />
             <Route path="courses/edit-quiz/:id" element={<EditQuiz />} />

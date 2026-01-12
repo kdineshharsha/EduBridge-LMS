@@ -168,25 +168,28 @@ export default function Overview() {
 
               {/* Button + Price */}
               <div className="flex items-center gap-6 mt-6">
-                <button
-                  onClick={handleEnroll}
-                  disabled={isEnrolled}
-                  className={`px-6 py-3 font-semibold rounded-xl transition-all flex items-center gap-2 ${isEnrolled
-                      ? "bg-gray-400 cursor-not-allowed text-white"
-                      : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg"
-                    }`}
-                >
-                  {isEnrolled ? (
-                    <>
-                      <FcApproval className="text-xl" />
-                      Already Enrolled
-                    </>
-                  ) : course.isFree || course.price === 0 ? (
-                    "Enroll for Free"
-                  ) : (
-                    "Buy Course"
-                  )}
-                </button>
+                {user?.role === "student" && (
+                  <button
+                    onClick={handleEnroll}
+                    disabled={isEnrolled}
+                    className={`px-6 py-3 font-semibold rounded-xl transition-all flex items-center gap-2 ${isEnrolled
+                        ? "bg-gray-400 cursor-not-allowed text-white"
+                        : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg"
+                      }`}
+                  >
+                    {isEnrolled ? (
+                      <>
+                        <FcApproval className="text-xl" />
+                        Already Enrolled
+                      </>
+                    ) : course.isFree || course.price === 0 ? (
+                      "Enroll for Free"
+                    ) : (
+                      "Buy Course"
+                    )}
+                  </button>
+                )}
+
                 <p className="text-2xl font-bold text-gray-900">
                   Rs.{course.price?.toLocaleString() || "0.00"}
                 </p>

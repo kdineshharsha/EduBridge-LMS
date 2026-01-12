@@ -349,12 +349,12 @@ const Dashboard = () => {
                         <DonutSummaryChart
                             title="Course Health"
                             labels={[
-                                `Published (${courseHealth ? courseHealth.published : 0})`,
-                                `Draft (${courseHealth ? courseHealth.draft : 0})`,
+                                `Published (${courseHealth ? courseHealth.publishedCourses : 0})`,
+                                `Draft (${courseHealth ? courseHealth.draftCourses : 0})`,
                             ]}
                             values={[
-                                courseHealth ? courseHealth.published : 0,
-                                courseHealth ? courseHealth.draft : 0,
+                                courseHealth ? courseHealth.publishedCourses : 0,
+                                courseHealth ? courseHealth.draftCourses : 0,
                             ]}
                             totalLabel="Total Courses"
                         />

@@ -3,6 +3,7 @@ import CourseSection from "../../components/courseSection";
 import Footer from "../../components/fotter";
 import { useNavigate } from "react-router-dom";
 import FeedbackCarousel from "../../components/feedbackCarousel";
+import WhyChooseUs from "../../components/whyChooseus";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -153,6 +154,7 @@ export default function HomePage() {
           query="category=Business"
         ></CourseSection>
       </div>
+      <WhyChooseUs />
       <FeedbackCarousel />
       <Footer />
     </div>

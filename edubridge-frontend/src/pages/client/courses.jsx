@@ -87,7 +87,7 @@ export default function Courses() {
   });
 
   return (
-    <div className="w-full p-3 lg:p-4 bg-background">
+    <div className="w-full p-3 lg:p-4 mb-20 lg:mb-0 bg-background">
       {/* 🔍 Search & Category Filter */}
       <div className="mb-4 p-6 gap-3 bg-white rounded-lg shadow">
         <div className="flex items-center justify-between mb-4">
@@ -147,8 +147,8 @@ export default function Courses() {
                 backgroundColor: isSelected
                   ? "#6366f1"
                   : isFocused
-                  ? "#e0e7ff"
-                  : "white",
+                    ? "#e0e7ff"
+                    : "white",
                 color: isSelected ? "white" : "#111827",
                 fontWeight: isSelected ? "600" : "normal",
                 cursor: "pointer",

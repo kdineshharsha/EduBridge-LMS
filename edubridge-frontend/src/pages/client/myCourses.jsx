@@ -2,21 +2,33 @@ import React, { useState, useEffect } from "react";
 import { Clock, BookOpen, User, PlayCircle } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function MyCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user, token, logout } = useAuth();
+  const navigate = useNavigate();
 
   const userId = user?._id;
+
+  useEffect(() => {
+    if (user?.role !== "student") {
+      navigate(
+        user?.role === "instructor"
+          ? "/instructor/courses"
+          : "/admin/dashboard",
+        { replace: true }
+      );
+    }
+  }, [user]);
+
 
   const fetchCourses = async () => {
     if (!userId) return; // Prevent API call if user not loaded yet
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
+        `${import.meta.env.VITE_BACKEND_URL
         }/api/course/enrolled-courses/${userId}`,
         {
           headers: {

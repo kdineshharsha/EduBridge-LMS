@@ -161,11 +161,12 @@ const Dashhboard = () => {
     async function fetchTopCourses() {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/instructor/top-courses`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/top-courses`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        console.log("Top Courses:", res.data);
         setTopCourses(res.data);
       } catch (err) {
         console.error("Top courses fetch error:", err);

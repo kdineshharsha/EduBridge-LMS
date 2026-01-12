@@ -14,6 +14,7 @@ import AdminCourses from "./admin/adminCourses";
 import EditCourse from "./admin/manageCourse";
 import AdminUsers from "./admin/users";
 import AdminUserOverview from "./admin/adminUserOverview";
+import AdminSettings from "./admin/adminSettings";
 
 export default function InstructorPage() {
   const [userValidated, setUserValidated] = useState(false);
@@ -158,7 +159,7 @@ export default function InstructorPage() {
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/courses" element={<AdminCourses />} />
             <Route path="/users" element={<AdminUsers />} />
-            <Route path="/settings" element={<InstructorSettings />} />
+            <Route path="/settings" element={<AdminSettings />} />
             <Route path="/users/:id" element={<AdminUserOverview />} />
             <Route path="courses/:id" element={<CourseOverview />} />
             <Route path="courses/add-course" element={<AddCourse />} />

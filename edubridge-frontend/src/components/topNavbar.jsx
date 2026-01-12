@@ -21,12 +21,29 @@ export default function TopNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/courses", label: "Courses" },
     { to: "/contacts", label: "Contact Us" },
     { to: "/about", label: "About Us" },
   ];
+
+  function MenuItem({ label, icon: Icon, onClick, danger }) {
+    return (
+      <button
+        onClick={onClick}
+        className={`flex items-center gap-3 px-4 py-2 text-sm rounded-md transition ${danger
+          ? "text-red-600 hover:bg-red-50"
+          : "text-gray-700 hover:bg-gray-100"
+          }`}
+      >
+        <Icon className="w-4 h-4" />
+        {label}
+      </button>
+    );
+  }
+
 
   return (
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
@@ -47,10 +64,9 @@ export default function TopNavbar() {
                 key={index}
                 to={item.to}
                 className={({ isActive }) =>
-                  `px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                  `px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
                   }`
                 }
               >
@@ -123,51 +139,78 @@ export default function TopNavbar() {
 
                     {/* Menu Items */}
                     <div className="flex flex-col mt-1">
-                      {[
-                        {
-                          label: "My Profile",
-                          icon: User,
-                          action: () => navigate("/profile"),
-                        },
-                        {
-                          label: "My Courses",
-                          icon: BookOpen,
-                          action: () => navigate("/my-courses"),
-                        },
-                        {
-                          label: "Settings",
-                          icon: Settings,
-                          action: () => navigate("/settings"),
-                        },
-                      ].map(({ label, icon: Icon, action }, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            action();
-                            setMenuOpen(false);
-                          }}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-all duration-150 rounded-md"
-                        >
-                          <Icon className="w-4 h-4 text-gray-500" />
-                          {label}
-                        </button>
-                      ))}
+
+                      {/* ================= ADMIN ================= */}
+                      {user?.role === "admin" && (
+                        <>
+                          <MenuItem
+                            label="Admin Dashboard"
+                            icon={User}
+                            onClick={() => navigate("/admin/dashboard")}
+                          />
+                          <MenuItem
+                            label="Settings"
+                            icon={Settings}
+                            onClick={() => navigate("/admin/settings")}
+                          />
+                        </>
+                      )}
+
+                      {/* ================= INSTRUCTOR ================= */}
+                      {user?.role === "instructor" && (
+                        <>
+                          <MenuItem
+                            label="Dashboard"
+                            icon={User}
+                            onClick={() => navigate("/instructor/dashboard")}
+                          />
+                          <MenuItem
+                            label="My Courses"
+                            icon={BookOpen}
+                            onClick={() => navigate("/instructor/courses")}
+                          />
+                          <MenuItem
+                            label="Settings"
+                            icon={Settings}
+                            onClick={() => navigate("/instructor/settings")}
+                          />
+                        </>
+                      )}
+
+                      {/* ================= STUDENT ================= */}
+                      {user?.role === "student" && (
+                        <>
+                          <MenuItem
+                            label="My Profile"
+                            icon={User}
+                            onClick={() => navigate("/profile")}
+                          />
+                          <MenuItem
+                            label="My Courses"
+                            icon={BookOpen}
+                            onClick={() => navigate("/my-courses")}
+                          />
+                          <MenuItem
+                            label="Settings"
+                            icon={Settings}
+                            onClick={() => navigate("/settings")}
+                          />
+                        </>
+                      )}
 
                       <hr className="my-1 border-gray-200" />
 
-                      {/* Logout */}
-                      <button
+                      <MenuItem
+                        label="Logout"
+                        icon={LogOut}
+                        danger
                         onClick={() => {
                           logout();
-                          setMenuOpen(false);
                           navigate("/");
                         }}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-150 rounded-md"
-                      >
-                        <LogOut className="w-4 h-4 text-red-500" />
-                        Logout
-                      </button>
+                      />
                     </div>
+
                   </div>
                 )}
               </div>

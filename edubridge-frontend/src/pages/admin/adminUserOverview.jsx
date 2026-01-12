@@ -14,6 +14,7 @@ import {
     Loader2,
     Power
 } from "lucide-react";
+import Loader from "../../components/Loader";
 
 export default function AdminUserOverview() {
     const { id } = useParams();
@@ -78,8 +79,8 @@ export default function AdminUserOverview() {
 
     if (loading) {
         return (
-            <div className="h-full flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="h-full bg-white flex items-center justify-center">
+                <Loader />
             </div>
         );
     }

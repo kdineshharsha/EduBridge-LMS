@@ -3,11 +3,13 @@ import { User, Bell, Lock } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   // Fetch user
   useEffect(() => {
@@ -28,6 +30,18 @@ export default function Settings() {
 
     fetchUserData();
   }, [token]);
+
+  useEffect(() => {
+    if (user?.role !== "student") {
+      navigate(
+        user?.role === "admin"
+          ? "/admin/settings"
+          : "/instructor/settings",
+        { replace: true }
+      );
+    }
+  }, [user]);
+
 
   return (
     <div className="min-h-screen w-full bg-gray-50 p-4 md:p-6 pb-24">
@@ -79,10 +93,9 @@ function TabButton({ label, icon: Icon, active, onClick }) {
     <button
       onClick={onClick}
       className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-sm transition-all
-        ${
-          active
-            ? "bg-blue-600 text-white border-blue-600"
-            : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+        ${active
+          ? "bg-blue-600 text-white border-blue-600"
+          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
         }`}
     >
       <Icon size={18} />
@@ -408,11 +421,10 @@ function ChangePassword() {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className={`w-full md:w-auto px-5 py-2 rounded-xl transition ${
-          loading
-            ? "bg-gray-400 text-white"
-            : "bg-blue-600 text-white hover:bg-blue-700"
-        }`}
+        className={`w-full md:w-auto px-5 py-2 rounded-xl transition ${loading
+          ? "bg-gray-400 text-white"
+          : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
       >
         {loading ? "Updating..." : "Update Password"}
       </button>

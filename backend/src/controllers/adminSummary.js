@@ -139,3 +139,68 @@ export async function getUserRoleSummary(req, res) {
     });
   }
 }
+
+export async function adminTopCourses(req, res) {
+  try {
+    const courses = await Course.aggregate([
+      // 1️⃣ Only published or draft courses (exclude deleted/suspended if needed)
+      {
+        $match: {
+          isPublished: { $in: [true, false] },
+        },
+      },
+
+      // 2️⃣ Project required fields
+      {
+        $project: {
+          title: 1,
+          thumbnail: 1,
+
+          category: {
+            $ifNull: [{ $arrayElemAt: ["$categories", 0] }, "Other"],
+          },
+
+          students: {
+            $size: { $ifNull: ["$enrolledStudents", []] },
+          },
+
+          sales: {
+            $cond: [
+              { $eq: ["$isFree", true] },
+              0,
+              {
+                $multiply: [
+                  { $size: { $ifNull: ["$enrolledStudents", []] } },
+                  { $ifNull: ["$price", 0] },
+                ],
+              },
+            ],
+          },
+
+          price: {
+            $cond: [
+              { $eq: ["$isFree", true] },
+              "Free",
+              { $concat: ["Rs. ", { $toString: "$price" }] },
+            ],
+          },
+
+          status: {
+            $cond: [{ $eq: ["$isPublished", true] }, "Published", "Draft"],
+          },
+        },
+      },
+
+      // 3️⃣ Sort by sales first, students next
+      { $sort: { sales: -1, students: -1 } },
+
+      // 4️⃣ Limit for dashboard
+      { $limit: 5 },
+    ]);
+
+    res.json(courses);
+  } catch (error) {
+    console.error("Admin top courses error:", error);
+    res.status(500).json({ message: "Failed to load top courses" });
+  }
+}

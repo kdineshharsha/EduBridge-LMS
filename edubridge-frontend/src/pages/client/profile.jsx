@@ -5,11 +5,13 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { FourSquare } from "react-loading-indicators";
 import Loader from "../../components/loader";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,6 +40,17 @@ export default function Profile() {
     fetchUserData();
   }, [token]);
 
+  useEffect(() => {
+    if (user?.role !== "student") {
+      navigate(
+        user?.role === "admin"
+          ? "/admin/dashboard"
+          : "/instructor/dashboard",
+        { replace: true }
+      );
+    }
+  }, [user]);
+
   // 🌀 Loading State
   if (loading) {
     return (
@@ -57,7 +70,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 p-6">
+    <div className="min-h-screen w-full mb-20 lg:mb-0 bg-gray-50 p-6">
       <div className="bg-white w-full rounded-3xl shadow-lg border border-gray-200 p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
